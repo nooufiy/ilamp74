@@ -1,0 +1,24 @@
+# .bashrc
+# User specific aliases and functions
+
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+alias l='ls --group-directories-first -alh'
+alias del='rm -rf'
+alias rap='systemctl restart httpd.service'
+alias rdb='systemctl restart mysqld'
+alias www='cd /home/w'
+alias slog='cd /home/l'
+alias cho='chown -R apache:apache'
+alias val='cat /home/l/access_log'
+alias vel='cat /home/l/error_log'
+alias cal='> /home/l/access_log'
+alias cel='> /home/l/error_log'
+alias c='clear'
+alias z='zip -r'
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+  . /etc/bashrc
+fi
