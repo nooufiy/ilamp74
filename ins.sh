@@ -49,7 +49,8 @@ systemctl restart httpd.service
 convert -version
 yum -y install libtool httpd-devel
 cd /tmp
-wget https://www.cloudflare.com/static/misc/mod_cloudflare/mod_cloudflare.c
+#wget https://www.cloudflare.com/static/misc/mod_cloudflare/mod_cloudflare.c
+wget https://raw.githubusercontent.com/cloudflare/mod_cloudflare/master/mod_cloudflare.c
 apxs -a -i -c mod_cloudflare.c
 chmod 755 /usr/lib64/httpd/modules/mod_cloudflare.so
 #nano /etc/httpd/conf.d/cloudflare.conf
