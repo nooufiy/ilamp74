@@ -2,16 +2,14 @@
 
 echo "-"
 echo "-"
-echo "========================="
-echo "LAMP Begin Installation"
-echo "========================="
+echo "==========================="
+echo "LAMP 7.4 Begin Installation"
+echo "===========================" 
 echo "-"
 echo "-"
 
 yum install screen -y
 yum -y install nano
-#rm -rf ~/.bashrc
-#nano ~/.bashrc
 yum -y install httpd zip unzip git
 systemctl start httpd.service
 systemctl enable httpd.service
@@ -53,14 +51,12 @@ cd /tmp
 wget https://raw.githubusercontent.com/cloudflare/mod_cloudflare/master/mod_cloudflare.c
 apxs -a -i -c mod_cloudflare.c
 chmod 755 /usr/lib64/httpd/modules/mod_cloudflare.so
-#nano /etc/httpd/conf.d/cloudflare.conf
 echo "LoadModule cloudflare_module /usr/lib64/httpd/modules/mod_cloudflare.so" >> /etc/httpd/conf.d/cloudflare.conf
 systemctl restart httpd.service
 yum -y install logrotate
 mv /etc/logrotate.d/httpd /etc/logrotate.d/httpd.bak
-# nano /etc/logrotate.d/httpd
-sed -i '1 i\/home/l/*log' /etc/logrotate.d/httpd
-sed -i '1 i\minsize 1M' /etc/logrotate.d/httpd
+cd /etc/logrotate.d
+wget https://raw.githubusercontent.com/nooufiy/ilamp81/main/httpd
 sed -i "s/\/var\/www\/html/\/home\/w/g" /etc/httpd/conf/httpd.conf
 chcon -R -t httpd_sys_rw_content_t /home/w
 systemctl restart httpd.service
