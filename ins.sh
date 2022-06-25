@@ -58,5 +58,5 @@ mv /etc/logrotate.d/httpd /etc/logrotate.d/httpd.bak
 cd /etc/logrotate.d
 wget https://raw.githubusercontent.com/nooufiy/ilamp81/main/httpd
 sed -i "s/\/var\/www\/html/\/home\/w/g" /etc/httpd/conf/httpd.conf
-chcon -R -t httpd_sys_rw_content_t /home/w
+chcon -R system_u:object_r:httpd_sys_content_t /home/w
 systemctl restart httpd.service
