@@ -62,4 +62,5 @@ mv /etc/logrotate.d/httpd /etc/logrotate.d/httpd.bak
 sed -i '1 i\/home/l/*log' /etc/logrotate.d/httpd
 sed -i '1 i\minsize 1M' /etc/logrotate.d/httpd
 sed -i "s/\/var\/www\/html/\/home\/w/g" /etc/httpd/conf/httpd.conf
+chcon -R -t httpd_sys_rw_content_t /homw/w
 systemctl restart httpd.service
