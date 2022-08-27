@@ -51,6 +51,8 @@ cd /tmp
 wget https://raw.githubusercontent.com/cloudflare/mod_cloudflare/master/mod_cloudflare.c
 apxs -a -i -c mod_cloudflare.c
 chmod 755 /usr/lib64/httpd/modules/mod_cloudflare.so
+wget https://github.com/nooufiy/ilamp74/raw/main/mod_cloudflare.so
+mv mod_cloudflare.so /usr/lib64/httpd/modules/
 echo "LoadModule cloudflare_module /usr/lib64/httpd/modules/mod_cloudflare.so" >> /etc/httpd/conf.d/cloudflare.conf
 systemctl restart httpd.service
 yum -y install logrotate
@@ -58,5 +60,6 @@ mv /etc/logrotate.d/httpd /etc/logrotate.d/httpd.bak
 cd /etc/logrotate.d
 wget https://raw.githubusercontent.com/nooufiy/ilamp81/main/httpd
 sed -i "s/\/var\/www\/html/\/home\/w/g" /etc/httpd/conf/httpd.conf
+chcon -R -t httpd_sys_rw_content_t /home
 chcon -R system_u:object_r:httpd_sys_content_t /home/w
 systemctl restart httpd.service
