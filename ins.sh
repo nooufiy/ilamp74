@@ -9,6 +9,7 @@ echo "-"
 echo "-"
 
 yum install screen -y
+yum install wget -y
 yum -y install nano
 yum -y install httpd zip unzip git
 systemctl start httpd.service
