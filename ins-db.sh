@@ -36,6 +36,32 @@ yum install -y mariadb-server
 systemctl start mariadb
 systemctl enable mariadb
 yum -y install expect
+
+# Set variables for mysql_secure_installation
+rpas="S3cr3tt9II*"
+
+# Run mysql_secure_installation with autofill
+expect <<EOF
+spawn mysql_secure_installation
+expect "Enter current password for root (enter for none):"
+send "\r"
+expect "Set root password?"
+send "Y\r"
+expect "New password:"
+send "$rpas\r"
+expect "Re-enter new password:"
+send "$rpas\r"
+expect "Remove anonymous users?"
+send "Y\r"
+expect "Disallow root login remotely?"
+send "N\r"
+expect "Remove test database and access to it?"
+send "Y\r"
+expect "Reload privilege tables now?"
+send "Y\r"
+expect eof
+EOF
+
 yum-config-manager --enable remi-php74
 yum -y install php php-opcache
 systemctl restart httpd.service
@@ -52,6 +78,10 @@ echo "extension=imagick.so" > /etc/php.d/imagick.ini
 systemctl restart httpd.service
 convert -version
 yum -y install libtool httpd-devel
+
+yum install -y phpmyadmin
+ln -s /usr/share/phpmyadmin /var/www/html/phpmyadmin
+
 cd /tmp
 #wget https://www.cloudflare.com/static/misc/mod_cloudflare/mod_cloudflare.c
 wget https://raw.githubusercontent.com/cloudflare/mod_cloudflare/master/mod_cloudflare.c
@@ -68,4 +98,5 @@ wget https://raw.githubusercontent.com/nooufiy/ilamp81/main/httpd
 sed -i "s/\/var\/www\/html/\/home\/w/g" /etc/httpd/conf/httpd.conf
 chcon -R -t httpd_sys_rw_content_t /home
 chcon -R system_u:object_r:httpd_sys_content_t /home/w
+chown -R apache:apache /home/w
 systemctl restart httpd.service
