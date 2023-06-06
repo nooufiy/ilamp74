@@ -28,6 +28,7 @@ firewall-cmd --reload
 iptables -I INPUT -p tcp -m tcp --dport 80 -j ACCEPT
 rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY*
 yum -y install epel-release
+yum -y install certbot python2-certbot-apache mod_ssl
 rpm -Uvh http://rpms.remirepo.net/enterprise/remi-release-7.rpm
 yum -y install yum-utils
 yum -y update
