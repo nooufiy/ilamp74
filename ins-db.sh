@@ -2,9 +2,9 @@
 
 echo "-"
 echo "-"
-echo "==========================="
-echo "LAMP 7.4 Begin Installation"
-echo "===========================" 
+echo "=============================="
+echo "LAMP 7.4 DB Begin Installation"
+echo "==============================" 
 echo "-"
 echo "-"
 
@@ -92,9 +92,9 @@ cd /tmp
 #wget https://www.cloudflare.com/static/misc/mod_cloudflare/mod_cloudflare.c
 wget https://raw.githubusercontent.com/cloudflare/mod_cloudflare/master/mod_cloudflare.c
 apxs -a -i -c mod_cloudflare.c
-chmod 755 /usr/lib64/httpd/modules/mod_cloudflare.so
 wget https://github.com/nooufiy/ilamp74/raw/main/mod_cloudflare.so
 mv mod_cloudflare.so /usr/lib64/httpd/modules/
+chmod 755 /usr/lib64/httpd/modules/mod_cloudflare.so
 echo "LoadModule cloudflare_module /usr/lib64/httpd/modules/mod_cloudflare.so" >> /etc/httpd/conf.d/cloudflare.conf
 #systemctl restart httpd.service
 
