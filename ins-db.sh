@@ -9,7 +9,9 @@ echo "-"
 echo "-"
 
 yum install screen -y
+yum install dos2unix -y
 yum install wget -y
+yum install htop -y
 yum -y install nano
 yum -y install httpd zip unzip git
 systemctl start httpd.service
@@ -128,17 +130,14 @@ sed -i 's/\/var\/www\/html/\/'"$dpub"'\/w/g' /etc/httpd/conf/httpd.conf
 # chcon -R system_u:object_r:httpd_sys_content_t /"$dpub"/{w,l}
 # chown -R apache:apache /"$dpub"/{w,l}
 
-chcon -R -t httpd_sys_rw_content_t "/$dpub"
-chcon -R system_u:object_r:httpd_sys_content_t "/$dpub/{w,l}"
-chown -R apache:apache "/$dpub/{w,l}"
-
-vhs="dinamis" #dinamis/manual
+vhs="manual" #dinamis/manual
 
 if [ "$vhs" == "manual" ]; then
 
 # Vhost manual
 wget https://github.com/nooufiy/ilamp74/raw/main/vh.sh
 mv vh.sh /rs
+sed -i "3i email=\"$mail\"" /rs/vh.sh
 sed -i "4i home_dir=\"/$dpub/w\"" /rs/vh.sh
 chmod +x /rs/vh.sh
 
@@ -180,9 +179,6 @@ if ! grep -q "VirtualDocumentRoot" "$apache_conf"; then
   echo "VirtualDocumentRoot $sites_dir/%0" | sudo tee -a "$apache_conf" > /dev/null
 fi
 
-# service httpd restart
-
-fi
 
 # Ssl
 
@@ -213,4 +209,17 @@ systemctl enable myssl.service
 systemctl start myssl.service
 systemctl status myssl.service
 
+fi
+
+chcon -R -t httpd_sys_rw_content_t "/$dpub"
+chcon -R system_u:object_r:httpd_sys_content_t "/$dpub/{w,l}"
+chown -R apache:apache "/$dpub/{w,l}"
+
 service httpd restart
+service httpd status
+service mariadb status
+
+sed -i "4i alias ceklog='sudo tail -f /var/log/httpd/error_log'" ~/.bashrc
+source ~/.bashrc
+
+echo "[DONE]"
