@@ -8,14 +8,7 @@ echo "=============================="
 echo "-"
 echo "-"
 
-yum install screen -y
-yum install dos2unix -y
-yum install wget -y
-yum install htop -y
-yum -y install nano
-yum -y install httpd zip unzip git
-systemctl start httpd.service
-systemctl enable httpd.service
+
 dpub="sites"
 rpas="S3cr3tt9II*"
 mail="nooufiy@outlook.com"
@@ -43,6 +36,12 @@ yum install -y mariadb-server
 systemctl start mariadb
 systemctl enable mariadb
 yum -y install expect
+yum install htop -y
+yum install screen -y
+yum install dos2unix -y
+yum install wget -y
+yum -y install nano
+yum -y install httpd zip unzip git
 
 # Run mysql_secure_installation with autofill
 expect <<EOF
@@ -215,7 +214,9 @@ chcon -R -t httpd_sys_rw_content_t "/$dpub"
 chcon -R system_u:object_r:httpd_sys_content_t "/$dpub/{w,l}"
 chown -R apache:apache "/$dpub/{w,l}"
 
-service httpd restart
+systemctl start httpd.service
+systemctl enable httpd.service
+# service httpd restart
 service httpd status
 service mariadb status
 
