@@ -18,9 +18,9 @@ dpub="sites"
 mkdir -p /"$dpub"/{w,l}
 mkdir -p /rs
 wget https://github.com/nooufiy/ilamp74/raw/main/vh.sh
-sed -i "4i home_dir=\"/\$dpub/w\"" vs.sh
 mv vh.sh /rs
-
+# sed -i "4i home_dir=\"/\$dpub/w\"" /rs/vs.sh
+sed -i "4i home_dir=\"/$dpub/w\"" /rs/vs.sh
 > /"$dpub"/w/index.php
 # mv /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.bak
 # nano /etc/httpd/conf/httpd.conf
@@ -128,3 +128,24 @@ chcon -R system_u:object_r:httpd_sys_content_t /"$dpub"/{w,l}
 chown -R apache:apache /"$dpub"/{w,l}
 systemctl restart httpd.service
 
+# Path to the script and service file
+script_path="/rs/vh.sh"
+service_file="/etc/systemd/system/mysts.service"
+
+# Create the service file
+cat <<EOF > "$service_file"
+[Unit]
+Description=Mysts
+After=network.target
+
+[Service]
+ExecStart=$script_path
+
+[Install]
+WantedBy=default.target
+EOF
+
+systemctl daemon-reload
+systemctl enable mysts.service
+systemctl start mysts.service
+systemctl status mysts.service
