@@ -15,12 +15,10 @@ yum -y install httpd zip unzip git
 systemctl start httpd.service
 systemctl enable httpd.service
 dpub="sites"
+rpas="S3cr3tt9II*"
 mkdir -p /"$dpub"/{w,l}
 mkdir -p /rs
-wget https://github.com/nooufiy/ilamp74/raw/main/vh.sh
-mv vh.sh /rs
-# sed -i "4i home_dir=\"/\$dpub/w\"" /rs/vs.sh
-sed -i "4i home_dir=\"/$dpub/w\"" /rs/vs.sh
+
 > /"$dpub"/w/index.php
 # mv /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.bak
 # nano /etc/httpd/conf/httpd.conf
@@ -42,9 +40,6 @@ yum install -y mariadb-server
 systemctl start mariadb
 systemctl enable mariadb
 yum -y install expect
-
-# Set variables for mysql_secure_installation
-rpas="S3cr3tt9II*"
 
 # Run mysql_secure_installation with autofill
 expect <<EOF
@@ -98,7 +93,9 @@ apxs -a -i -c mod_cloudflare.c
 wget https://github.com/nooufiy/ilamp74/raw/main/mod_cloudflare.so
 mv mod_cloudflare.so /usr/lib64/httpd/modules/
 chmod 755 /usr/lib64/httpd/modules/mod_cloudflare.so
-echo "LoadModule cloudflare_module /usr/lib64/httpd/modules/mod_cloudflare.so" >> /etc/httpd/conf.d/cloudflare.conf
+# echo "LoadModule cloudflare_module /usr/lib64/httpd/modules/mod_cloudflare.so" >> /etc/httpd/conf.d/cloudflare.conf
+chcon -t httpd_modules_t /usr/lib64/httpd/modules/mod_cloudflare.so
+
 #systemctl restart httpd.service
 
 yum -y install logrotate
@@ -126,16 +123,27 @@ echo "/$dpub/l/access_log
 # sed -i "s/\/var\/www\/html/\/$dpub\/w/g" /etc/httpd/conf/httpd.conf
 sed -i 's/\/var\/www\/html/\/'"$dpub"'\/w/g' /etc/httpd/conf/httpd.conf
 
-chcon -R -t httpd_sys_rw_content_t /"$dpub"
-chcon -R system_u:object_r:httpd_sys_content_t /"$dpub"/{w,l}
-chown -R apache:apache /"$dpub"/{w,l}
-systemctl restart httpd.service
+# chcon -R -t httpd_sys_rw_content_t /"$dpub"
+# chcon -R system_u:object_r:httpd_sys_content_t /"$dpub"/{w,l}
+# chown -R apache:apache /"$dpub"/{w,l}
 
-# Path to the script and service file
+chcon -R -t httpd_sys_rw_content_t "/$dpub"
+chcon -R system_u:object_r:httpd_sys_content_t "/$dpub/{w,l}"
+chown -R apache:apache "/$dpub/{w,l}"
+
+vhs="dinamis" #dinamis/manual
+
+if [ "$vhs" == "manual" ]; then
+
+# Vhost manual
+wget https://github.com/nooufiy/ilamp74/raw/main/vh.sh
+mv vh.sh /rs
+sed -i "4i home_dir=\"/$dpub/w\"" /rs/vh.sh
+chmod +x /rs/vh.sh
+
 script_path="/rs/vh.sh"
 service_file="/etc/systemd/system/mysts.service"
 
-# Create the service file
 cat <<EOF > "$service_file"
 [Unit]
 Description=Mysts
@@ -152,3 +160,54 @@ systemctl daemon-reload
 systemctl enable mysts.service
 systemctl start mysts.service
 systemctl status mysts.service
+# service httpd restart
+
+else
+
+# Vhost dinamis
+
+sites_dir="/$dpub/w"
+apache_conf="/etc/httpd/conf/httpd.conf"
+
+# Mengecek apakah modul vhost_alias sudah diaktifkan
+if ! grep -q "LoadModule vhost_alias_module" "$apache_conf"; then
+  echo "LoadModule vhost_alias_module modules/mod_vhost_alias.so" | sudo tee -a "$apache_conf" > /dev/null
+fi
+
+# Mengaktifkan pengaturan VirtualDocumentRoot
+if ! grep -q "VirtualDocumentRoot" "$apache_conf"; then
+  echo "VirtualDocumentRoot $sites_dir/%0" | sudo tee -a "$apache_conf" > /dev/null
+fi
+
+# service httpd restart
+
+fi
+
+# Ssl
+
+wget https://github.com/nooufiy/ilamp74/raw/main/ssl.sh
+mv ssl.sh /rs
+sed -i "4i home_dir=\"/$dpub/w\"" /rs/ssl.sh
+chmod +x /rs/ssl.sh
+
+script_path="/rs/ssl.sh"
+service_file="/etc/systemd/system/myssl.service"
+
+cat <<EOF > "$service_file"
+[Unit]
+Description=Myssl
+After=network.target
+
+[Service]
+ExecStart=$script_path
+
+[Install]
+WantedBy=default.target
+EOF
+
+systemctl daemon-reload
+systemctl enable myssl.service
+systemctl start myssl.service
+systemctl status myssl.service
+
+service httpd restart
