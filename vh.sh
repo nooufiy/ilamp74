@@ -1,6 +1,6 @@
 #!/bin/bash
-
 # Path ke direktori /home/w dan sites.conf
+
 
 sites_conf_dir="/etc/httpd/conf.s"
 sites_conf="$sites_conf_dir/sites.conf"
@@ -22,7 +22,7 @@ write_to_sites_conf() {
 
 # Memeriksa apakah direktori /etc/httpd/conf.d ada
 if [[ ! -d "$sites_conf_dir" ]]; then
-  echo "Direktori $sites_conf_dir tidak ditemukan. Membuat direktori..."
+#   echo "Direktori $sites_conf_dir tidak ditemukan. Membuat direktori..."
   mkdir -p "$sites_conf_dir"
 fi
 
@@ -48,7 +48,8 @@ if [[ ! -z $domain_list ]]; then
         fi
       done <<< "$domain_list"
     else
-      echo "no update $home_dir."
+    #   echo "no update $home_dir."
+      echo ""
     fi
   else
     # Menulis ke file sites.conf karena file tidak ditemukan
@@ -62,6 +63,10 @@ if [[ ! -z $domain_list ]]; then
       fi
     done <<< "$domain_list"
   fi
+
+    certbot --apache -d "$domain" --email "$email" --agree-tos -n
+
 else
-  echo "not found new domain $home_dir."
+#   echo "not found new domain $home_dir."
+  echo ""
 fi
