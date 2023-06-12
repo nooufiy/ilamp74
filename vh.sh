@@ -8,7 +8,7 @@ sites_conf="$sites_conf_dir/sites.conf"
 # Fungsi untuk menulis ke file sites.conf
 write_to_sites_conf() {
   echo "<VirtualHost *:80>" >> "$sites_conf"
-  echo "DocumentRoot /home/w/$1" >> "$sites_conf"
+  echo "DocumentRoot $home_dir/$1" >> "$sites_conf"
   echo "ServerName $1" >> "$sites_conf"
 
   if [[ $2 == "domain" ]]; then
