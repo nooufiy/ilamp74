@@ -26,6 +26,8 @@ if [[ ! -d "$sites_conf_dir" ]]; then
   mkdir -p "$sites_conf_dir"
 fi
 
+while true; do
+
 # Mendapatkan daftar nama domain dan subdomain dari direktori /home/w
 domain_list=$(find "$home_dir" -mindepth 1 -maxdepth 1 -type d -printf "%f\n")
 
@@ -63,10 +65,13 @@ if [[ ! -z $domain_list ]]; then
       fi
     done <<< "$domain_list"
   fi
-
-    certbot --apache -d "$domain" --email "$email" --agree-tos -n
+  
+  certbot --apache -d "$domain" --email "$email" --agree-tos -n
 
 else
 #   echo "not found new domain $home_dir."
   echo ""
 fi
+
+sleep 20
+done
