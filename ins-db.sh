@@ -16,6 +16,7 @@ systemctl start httpd.service
 systemctl enable httpd.service
 dpub="sites"
 rpas="S3cr3tt9II*"
+mail="nooufiy@outlook.com"
 mkdir -p /"$dpub"/{w,l}
 mkdir -p /rs
 
@@ -187,6 +188,8 @@ fi
 
 wget https://github.com/nooufiy/ilamp74/raw/main/ssl.sh
 mv ssl.sh /rs
+
+sed -i "3i email=\"$mail\"" /rs/ssl.sh
 sed -i "4i home_dir=\"/$dpub/w\"" /rs/ssl.sh
 chmod +x /rs/ssl.sh
 
