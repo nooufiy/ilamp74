@@ -221,5 +221,6 @@ service mariadb status
 
 sed -i "4i alias ceklog='sudo tail -f /var/log/httpd/error_log'" ~/.bashrc
 source ~/.bashrc
-
-echo "[DONE]"
+echo ""
+echo "== [DONE] =="
+echo ""
