@@ -1,9 +1,10 @@
 #!/bin/bash
-# Path ke direktori /home/w dan sites.conf
+
 
 
 sites_conf_dir="/etc/httpd/conf.s"
 sites_conf="$sites_conf_dir/sites.conf"
+processed_file="/rs/processed_domains.txt"
 
 # Fungsi untuk menulis ke file sites.conf
 write_to_sites_conf() {
@@ -11,8 +12,8 @@ write_to_sites_conf() {
   echo "DocumentRoot $home_dir/$1" >> "$sites_conf"
   echo "ServerName $1" >> "$sites_conf"
 
-  if [[ $2 == "domain" ]]; then
-    echo "ServerAlias www.$1" >> "$sites_conf"
+  if [[ $2 == "subdomain" ]]; then
+    echo "ServerAlias *.$1" >> "$sites_conf"
   fi
 
   echo "</VirtualHost>" >> "$sites_conf"
@@ -22,56 +23,40 @@ write_to_sites_conf() {
 
 # Memeriksa apakah direktori /etc/httpd/conf.d ada
 if [[ ! -d "$sites_conf_dir" ]]; then
-#   echo "Direktori $sites_conf_dir tidak ditemukan. Membuat direktori..."
   mkdir -p "$sites_conf_dir"
 fi
 
+# Memeriksa apakah file processed_domains.txt ada
+if [[ ! -f "$processed_file" ]]; then
+  touch "$processed_file"
+fi
+
 while true; do
+  # Mendapatkan daftar domain dan subdomain dari direktori /sites/w
+  domain_list=($(find "$home_dir" -maxdepth 1 -type d -printf "%f\n" | grep -v "w"))
 
-# Mendapatkan daftar nama domain dan subdomain dari direktori /home/w
-domain_list=$(find "$home_dir" -mindepth 1 -maxdepth 1 -type d -printf "%f\n")
-
-# Memeriksa apakah ada perubahan pada daftar domain/subdomain
-if [[ ! -z $domain_list ]]; then
-  # Memeriksa apakah file sites.conf ada
-  if [[ -f "$sites_conf" ]]; then
-    # Memeriksa apakah ada perubahan pada file sites.conf
-    sites_conf_hash=$(md5sum "$sites_conf" | awk '{print $1}')
-    domain_list_hash=$(echo "$domain_list" | md5sum | awk '{print $1}')
-    if [[ $sites_conf_hash != $domain_list_hash ]]; then
-      # Menulis ke file sites.conf
-      > "$sites_conf" # Mengosongkan file sites.conf
-      while IFS= read -r domain; do
+  # Memeriksa apakah ada perubahan pada daftar domain/subdomain
+  if [[ ! -z "${domain_list[*]}" ]]; then
+    # Loop untuk setiap domain/subdomain
+    for domain in "${domain_list[@]}"; do
+      # Memeriksa apakah domain belum diproses sebelumnya
+      if ! grep -q "$domain" "$processed_file"; then
+        # Menulis konfigurasi virtual host ke sites.conf
         dot_count=$(grep -o "\." <<< "$domain" | wc -l)
         if [[ dot_count -eq 1 ]]; then
           write_to_sites_conf "$domain" "domain"
         elif [[ dot_count -eq 2 ]]; then
           write_to_sites_conf "$domain" "subdomain"
         fi
-      done <<< "$domain_list"
-    else
-    #   echo "no update $home_dir."
-      echo ""
-    fi
-  else
-    # Menulis ke file sites.conf karena file tidak ditemukan
-    > "$sites_conf" # Mengosongkan file sites.conf
-    while IFS= read -r domain; do
-      dot_count=$(grep -o "\." <<< "$domain" | wc -l)
-      if [[ dot_count -eq 1 ]]; then
-        write_to_sites_conf "$domain" "domain"
-      elif [[ dot_count -eq 2 ]]; then
-        write_to_sites_conf "$domain" "subdomain"
+
+        # Menandai domain sebagai telah diproses
+        echo "$domain" >> "$processed_file"
+
+        # Menjalankan certbot untuk mendapatkan sertifikat SSL
+        certbot --apache -d "$domain" --email "$email" --agree-tos -n
       fi
-    done <<< "$domain_list"
+    done
   fi
-  
-  certbot --apache -d "$domain" --email "$email" --agree-tos -n
 
-else
-#   echo "not found new domain $home_dir."
-  echo ""
-fi
-
-sleep 20
+  sleep 20
 done
