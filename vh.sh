@@ -12,8 +12,8 @@ write_to_sites_conf() {
   echo "DocumentRoot $home_dir/$1" >> "$sites_conf"
   echo "ServerName $1" >> "$sites_conf"
 
-  if [[ $2 == "subdomain" ]]; then
-    echo "ServerAlias *.$1" >> "$sites_conf"
+  if [[ $2 == "domain" ]]; then
+    echo "ServerAlias www.$1" >> "$sites_conf"
   fi
 
   echo "</VirtualHost>" >> "$sites_conf"
