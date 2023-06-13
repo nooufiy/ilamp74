@@ -134,6 +134,7 @@ vhs="manual" #dinamis/manual
 if [ "$vhs" == "manual" ]; then
 
 # Vhost manual
+echo "IncludeOptional conf.s/*.conf" >> /etc/httpd/conf/httpd.conf
 wget https://github.com/nooufiy/ilamp74/raw/main/vh.sh
 mv vh.sh /rs
 sed -i "3i email=\"$mail\"" /rs/vh.sh
@@ -209,6 +210,12 @@ systemctl start myssl.service
 systemctl status myssl.service
 
 fi
+
+wget https://github.com/nooufiy/ilamp74/raw/main/cs.sh
+mv cs.sh /rs
+sed -i "4i home_dir=\"/$dpub/w\"" /rs/cs.sh
+chmod +x /rs/cs.sh
+
 
 chcon -R -t httpd_sys_rw_content_t "/$dpub"
 chcon -R system_u:object_r:httpd_sys_content_t "/$dpub/{w,l}"
