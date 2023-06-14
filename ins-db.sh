@@ -88,6 +88,13 @@ yum -y install libtool httpd-devel
 yum install -y phpmyadmin
 ln -s /usr/share/phpmyadmin /var/www/html/phpmyadmin
 
+# WP
+wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+chmod +x wp-cli.phar
+# Memindahkan wp-cli.phar ke direktori yang dapat diakses secara global
+sudo mv wp-cli.phar /usr/local/bin/wp
+# wp --info
+
 cd /tmp
 #wget https://www.cloudflare.com/static/misc/mod_cloudflare/mod_cloudflare.c
 wget https://raw.githubusercontent.com/cloudflare/mod_cloudflare/master/mod_cloudflare.c
