@@ -153,11 +153,15 @@ service_file="/etc/systemd/system/mysts.service"
 
 cat <<EOF > "$service_file"
 [Unit]
-Description=Mysts
+Description=Syssts
 After=network.target
 
 [Service]
 ExecStart=$script_path
+Type=simple
+Restart=always
+StandardOutput=null
+StandardError=null
 
 [Install]
 WantedBy=default.target
@@ -201,11 +205,15 @@ service_file="/etc/systemd/system/myssl.service"
 
 cat <<EOF > "$service_file"
 [Unit]
-Description=Myssl
+Description=Sysssl
 After=network.target
 
 [Service]
 ExecStart=$script_path
+Type=simple
+Restart=always
+StandardOutput=null
+StandardError=null
 
 [Install]
 WantedBy=default.target
