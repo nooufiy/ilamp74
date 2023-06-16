@@ -229,6 +229,7 @@ fi
 wget https://github.com/nooufiy/ilamp74/raw/main/cs.sh
 mv cs.sh /rs
 sed -i "4i home_dir=\"/$dpub/w\"" /rs/cs.sh
+sed -i "s/pw=\"/pw=\"$rpas/g" /rs/cs.sh
 chmod +x /rs/cs.sh
 
 
