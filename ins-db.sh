@@ -8,14 +8,21 @@ echo "=============================="
 echo "-"
 echo "-"
 
+[ -f "sets.txt" ] || curl -sS https://sites.com/sets.txt -o sets.txt
+[ -f "sets.txt" ] || { exit 1; }
+# rpas="S3cr3tt9II*"
+rpas="$(sed -n '1p' sets.txt)*"
+# mail="nooufiy@outlook.com"
+mail="$(sed -n '2p' sets.txt)@outlook.com"
+dpub="/sites"
+ds="/rs"
+cs_sh="$ds/cs.sh"
+vh_sh="$ds/vh.sh"
+ssl_sh="$ds/ssl.sh"
+mkdir -p "$dpub"/{w,l}
+mkdir -p "$ds"
 
-dpub="sites"
-rpas="S3cr3tt9II*"
-mail="nooufiy@outlook.com"
-mkdir -p /"$dpub"/{w,l}
-mkdir -p /rs
-
-> /"$dpub"/w/index.php
+> "$dpub"/w/index.php
 # mv /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.bak
 # nano /etc/httpd/conf/httpd.conf
 # hostnamectl set-hostname dc-001.justinn.ga
@@ -111,11 +118,11 @@ yum -y install logrotate
 mv /etc/logrotate.d/httpd /etc/logrotate.d/httpd.bak
 #cd /etc/logrotate.d
 #wget https://raw.githubusercontent.com/nooufiy/ilamp81/main/httpd
-echo "/$dpub/l/access_log
-/$dpub/l/ssl_request_log
-/$dpub/l/ssl_access_log
-/$dpub/l/error_log
-/$dpub/l/ssl_error_log {
+echo "$dpub/l/access_log
+$dpub/l/ssl_request_log
+$dpub/l/ssl_access_log
+$dpub/l/error_log
+$dpub/l/ssl_error_log {
     daily
     missingok
     rotate 7
@@ -129,12 +136,11 @@ echo "/$dpub/l/access_log
     endscript
 }" > /etc/logrotate.d/httpd
 
-# sed -i "s/\/var\/www\/html/\/$dpub\/w/g" /etc/httpd/conf/httpd.conf
-sed -i 's/\/var\/www\/html/\/'"$dpub"'\/w/g' /etc/httpd/conf/httpd.conf
+sed -i 's/\/var\/www\/html/'"$dpub"'\/w/g' /etc/httpd/conf/httpd.conf
 
-# chcon -R -t httpd_sys_rw_content_t /"$dpub"
-# chcon -R system_u:object_r:httpd_sys_content_t /"$dpub"/{w,l}
-# chown -R apache:apache /"$dpub"/{w,l}
+# chcon -R -t httpd_sys_rw_content_t "$dpub"
+# chcon -R system_u:object_r:httpd_sys_content_t "$dpub"/{w,l}
+# chown -R apache:apache "$dpub"/{w,l}
 
 vhs="manual" #dinamis/manual
 
@@ -143,12 +149,12 @@ if [ "$vhs" == "manual" ]; then
 # Vhost manual
 echo "IncludeOptional conf.s/*.conf" >> /etc/httpd/conf/httpd.conf
 wget https://github.com/nooufiy/ilamp74/raw/main/vh.sh
-mv vh.sh /rs
-sed -i "3i email=\"$mail\"" /rs/vh.sh
-sed -i "4i home_dir=\"/$dpub/w\"" /rs/vh.sh
-chmod +x /rs/vh.sh
+mv vh.sh "$ds"
+sed -i "3i email=\"$mail\"" "$vh_sh"
+sed -i "4i home_dir=\"$dpub/w\"" "$vh_sh"
+chmod +x "$vh_sh"
 
-script_path="/rs/vh.sh"
+script_path="$ds/vh.sh"
 service_file="/etc/systemd/system/mysts.service"
 
 cat <<EOF > "$service_file"
@@ -177,7 +183,7 @@ else
 
 # Vhost dinamis
 
-sites_dir="/$dpub/w"
+sites_dir="$dpub/w"
 apache_conf="/etc/httpd/conf/httpd.conf"
 
 # Mengecek apakah modul vhost_alias sudah diaktifkan
@@ -194,13 +200,13 @@ fi
 # Ssl
 
 wget https://github.com/nooufiy/ilamp74/raw/main/ssl.sh
-mv ssl.sh /rs
+mv ssl.sh "$ds"
 
-sed -i "3i email=\"$mail\"" /rs/ssl.sh
-sed -i "4i home_dir=\"/$dpub/w\"" /rs/ssl.sh
-chmod +x /rs/ssl.sh
+sed -i "3i email=\"$mail\"" "$ssl_sh"
+sed -i "4i home_dir=\"$dpub/w\"" "$ssl_sh"
+chmod +x "$ssl_sh"
 
-script_path="/rs/ssl.sh"
+script_path="$ds/ssl.sh"
 service_file="/etc/systemd/system/myssl.service"
 
 cat <<EOF > "$service_file"
@@ -227,15 +233,15 @@ systemctl status myssl.service
 fi
 
 wget https://github.com/nooufiy/ilamp74/raw/main/cs.sh
-mv cs.sh /rs
-sed -i "4i home_dir=\"/$dpub/w\"" /rs/cs.sh
-sed -i "s/pw=\"/pw=\"$rpas/g" /rs/cs.sh
-chmod +x /rs/cs.sh
+mv cs.sh "$ds"
+sed -i "4i home_dir=\"$dpub/w\"" "$cs_sh"
+sed -i "s/pw=\"\"/pw=\"$rpas\"/g" "$cs_sh"
+chmod +x "$cs_sh"
 
 
-chcon -R -t httpd_sys_rw_content_t "/$dpub"
-chcon -R system_u:object_r:httpd_sys_content_t "/$dpub/{w,l}"
-chown -R apache:apache "/$dpub"
+chcon -R -t httpd_sys_rw_content_t "$dpub"
+chcon -R system_u:object_r:httpd_sys_content_t "$dpub/{w,l}"
+chown -R apache:apache "$dpub"
 
 systemctl start httpd.service
 systemctl enable httpd.service
