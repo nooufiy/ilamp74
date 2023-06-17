@@ -8,12 +8,6 @@ echo "=============================="
 echo "-"
 echo "-"
 
-[ -f "sets.txt" ] || curl -sS https://github.com/nooufiy/ilamp74/raw/main/sets.txt -o sets.txt
-[ -f "sets.txt" ] || { exit 1; }
-# rpas="S3cr3tt9II*"
-rpas="$(sed -n '1p' sets.txt)*"
-# mail="nooufiy@outlook.com"
-mail="$(sed -n '2p' sets.txt)@outlook.com"
 dpub="/sites"
 ds="/rs"
 cs_sh="$ds/cs.sh"
@@ -49,6 +43,13 @@ yum install dos2unix -y
 yum install wget -y
 yum -y install nano
 yum -y install httpd zip unzip git
+
+[ -f "sets.txt" ] || curl -sS https://github.com/nooufiy/ilamp74/raw/main/sets.txt -o sets.txt
+[ -f "sets.txt" ] || { exit 1; }
+# rpas="S3cr3tt9II*"
+rpas="$(sed -n '1p' sets.txt)*"
+# mail="nooufiy@outlook.com"
+mail="$(sed -n '2p' sets.txt)@outlook.com"
 
 # Run mysql_secure_installation with autofill
 expect <<EOF
