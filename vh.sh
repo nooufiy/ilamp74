@@ -53,14 +53,15 @@ while true; do
             # gaewp
             mkdir "$home_dir/$domain"
 
-            # Membuat file index.php di dalam direktori
-            # touch "$home_dir/$domain/index.php"
+            timestamp=$(date +%s)
+            # short="$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 13 | head -n 1)"
+            # dbuser=$(echo "${short}_usr" | sed -e 's/[^a-zA-Z0-9_]//g')
+            # dbname=$(echo "${short}_nem" | sed -e 's/[^a-zA-Z0-9_]//g')
 
-            short=${domain:0:5}
-
+            short=$(echo -n "$domain" | sha256sum | awk '{print substr($1, 1, 5)}')
             dbuser="${short}_usr"
-            dbname="${short}_nam"
-            dbpass="${short}_pas"
+            dbname="${short}_nem"
+            dbpass="${short}_pas_${timestamp}"
 
             pw=""
 
@@ -103,14 +104,15 @@ while true; do
             chown -R apache:apache "$home_dir/$domain"
 
             cd "$home_dir/$domain"
-            wp core install --url="http://$domain/" --title="$domain" --admin_user="$domain" --admin_password=*tfgtcd71* --admin_email=buatdon@yahoo.com --allow-root
+            wp core install --url="http://$domain/" --title="$domain" --admin_user="admin" --admin_password=rahasi4a911* --admin_email="$mail" --allow-root
             wp option update blogdescription "" --allow-root
 
             # Menjalankan certbot untuk mendapatkan sertifikat SSL
             certbot --apache -d "$domain" --email "$email" --agree-tos -n
 
             # Menandai domain sebagai telah diproses
-            echo "$domain" >> "$processed_file"
+            # echo "$domain" >> "$processed_file"
+            echo "$domain,$dbuser,$dbname,$dbpass" >> processed_domains.txt
         fi
         done
     fi
