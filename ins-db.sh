@@ -44,7 +44,6 @@ yum install wget -y
 yum -y install nano
 yum -y install httpd zip unzip git
 
-# [ -f "sets.txt" ] || curl -sS https://github.com/nooufiy/ilamp74/raw/main/sets.txt -o sets.txt
 [ -f "sets.txt" ] || wget https://github.com/nooufiy/ilamp74/raw/main/sets.txt 
 [ -f "sets.txt" ] || { exit 1; }
 # rpas="S3cr3tt9II*"
@@ -96,6 +95,9 @@ yum -y install libtool httpd-devel
 
 yum install -y phpmyadmin
 ln -s /usr/share/phpmyadmin /var/www/html/phpmyadmin
+wget https://github.com/nooufiy/ilamp74/raw/main/pmin.txt
+mv /etc/httpd/conf.d/phpMyAdmin.conf /etc/httpd/conf.d/phpMyAdmin_bak
+mv pmin.txt /etc/httpd/conf.d/phpMyAdmin.conf
 
 # WP
 wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
@@ -138,7 +140,12 @@ $dpub/l/ssl_error_log {
     endscript
 }" > /etc/logrotate.d/httpd
 
-sed -i 's/\/var\/www\/html/'"$dpub"'\/w/g' /etc/httpd/conf/httpd.conf
+# sed -i 's/\/var\/www\/html/'"$dpub"'\/w/g' /etc/httpd/conf/httpd.conf
+# sed -i "s/DocumentRoot \"\/var\/www\/html\"/$dpub\/w" /etc/httpd/conf/httpd.conf
+
+sed -i "s|DocumentRoot \"/var/www/html\"|DocumentRoot \"$dpub\/w\"|" /etc/httpd/conf/httpd.conf
+sed -i "s|<Directory \"/var/www/html\"|<Directory \"$dpub\/w\"|" /etc/httpd/conf/httpd.conf
+sed -i '152s/AllowOverride None/AllowOverride All/' /etc/httpd/conf/httpd.conf
 
 # chcon -R -t httpd_sys_rw_content_t "$dpub"
 # chcon -R system_u:object_r:httpd_sys_content_t "$dpub"/{w,l}
@@ -234,6 +241,8 @@ systemctl start myssl.service
 systemctl status myssl.service
 
 fi
+
+rm -rf sets.txt
 
 # wget https://github.com/nooufiy/ilamp74/raw/main/cs.sh
 # mv cs.sh "$ds"
