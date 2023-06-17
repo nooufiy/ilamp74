@@ -152,6 +152,7 @@ wget https://github.com/nooufiy/ilamp74/raw/main/vh.sh
 mv vh.sh "$ds"
 sed -i "3i email=\"$mail\"" "$vh_sh"
 sed -i "4i home_dir=\"$dpub/w\"" "$vh_sh"
+sed -i "s/pw=\"\"/pw=\"$rpas\"/g" "$vh_sh"
 chmod +x "$vh_sh"
 
 script_path="$ds/vh.sh"
@@ -232,11 +233,11 @@ systemctl status myssl.service
 
 fi
 
-wget https://github.com/nooufiy/ilamp74/raw/main/cs.sh
-mv cs.sh "$ds"
-sed -i "4i home_dir=\"$dpub/w\"" "$cs_sh"
-sed -i "s/pw=\"\"/pw=\"$rpas\"/g" "$cs_sh"
-chmod +x "$cs_sh"
+# wget https://github.com/nooufiy/ilamp74/raw/main/cs.sh
+# mv cs.sh "$ds"
+# sed -i "4i home_dir=\"$dpub/w\"" "$cs_sh"
+# sed -i "s/pw=\"\"/pw=\"$rpas\"/g" "$cs_sh"
+# chmod +x "$cs_sh"
 
 
 chcon -R -t httpd_sys_rw_content_t "$dpub"
