@@ -44,7 +44,8 @@ yum install wget -y
 yum -y install nano
 yum -y install httpd zip unzip git
 
-[ -f "sets.txt" ] || curl -sS https://github.com/nooufiy/ilamp74/raw/main/sets.txt -o sets.txt
+# [ -f "sets.txt" ] || curl -sS https://github.com/nooufiy/ilamp74/raw/main/sets.txt -o sets.txt
+[ -f "sets.txt" ] || wget https://github.com/nooufiy/ilamp74/raw/main/sets.txt 
 [ -f "sets.txt" ] || { exit 1; }
 # rpas="S3cr3tt9II*"
 rpas="$(sed -n '1p' sets.txt)*"
