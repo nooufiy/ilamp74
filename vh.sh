@@ -32,85 +32,88 @@ fi
 
 while true; do
   # Mendapatkan daftar domain dan subdomain dari direktori /sites/w
-  domain_list=($(find "$home_dir" -maxdepth 1 -type d -printf "%f\n" | grep -v "w"))
+  
+  if [[ -f "$home_dir/domains.txt" && -s "$home_dir/domains.txt" ]]; then
+    domain_list=($(less "$home_dir/domains.txt"))
 
-  # Memeriksa apakah ada perubahan pada daftar domain/subdomain
-  if [[ ! -z "${domain_list[*]}" ]]; then
-    # Loop untuk setiap domain/subdomain
-    for domain in "${domain_list[@]}"; do
-      # Memeriksa apakah domain belum diproses sebelumnya
-      if ! grep -q "$domain" "$processed_file"; then
-        # Menulis konfigurasi virtual host ke sites.conf
-        dot_count=$(grep -o "\." <<< "$domain" | wc -l)
-        if [[ dot_count -eq 1 ]]; then
-          write_to_sites_conf "$domain" "domain"
-        elif [[ dot_count -eq 2 ]]; then
-          write_to_sites_conf "$domain" "subdomain"
+    # Memeriksa apakah ada perubahan pada daftar domain/subdomain
+    if [[ ! -z "${domain_list[*]}" ]]; then
+        # Loop untuk setiap domain/subdomain
+        for domain in "${domain_list[@]}"; do
+        # Memeriksa apakah domain belum diproses sebelumnya
+        if ! grep -q "$domain" "$processed_file"; then
+            # Menulis konfigurasi virtual host ke sites.conf
+            dot_count=$(grep -o "\." <<< "$domain" | wc -l)
+            if [[ dot_count -eq 1 ]]; then
+            write_to_sites_conf "$domain" "domain"
+            elif [[ dot_count -eq 2 ]]; then
+            write_to_sites_conf "$domain" "subdomain"
+            fi
+
+            # gaewp
+            mkdir "$home_dir/$domain"
+
+            # Membuat file index.php di dalam direktori
+            # touch "$home_dir/$domain/index.php"
+
+            short=${domain:0:5}
+
+            dbuser="${short}_usr"
+            dbname="${short}_nam"
+            dbpass="${short}_pas"
+
+            pw=""
+
+            # mysql -u root -p"$pw" -e "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$dbpass';"
+
+            if ! mysql -u root -p"$pw" -e "SELECT 1 FROM mysql.user WHERE user = '$dbuser';" >/dev/null 2>&1; then
+                mysql -u root -p"$pw" -e "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$dbpass';"
+            fi
+
+            if mysql -u root -p"$pw" -e "USE $dbname;" >/dev/null 2>&1; then
+                mysql -u root -p"$pw" -e "DROP DATABASE $dbname;"
+            fi
+
+            # echo '--Create Database--'$'\r'$'\r'
+            mysql -u root -p"$pw" -e "CREATE DATABASE $dbname;"
+            mysql -u root -p"$pw" -e "GRANT ALL PRIVILEGES ON $dbname.* TO '$dbuser'@'localhost';"
+            mysql -u root -p"$pw" -e "FLUSH PRIVILEGES;"
+
+            wget -P "$home_dir/$domain" https://wordpress.org/latest.tar.gz
+            tar -zxvf "$home_dir/$domain/latest.tar.gz" -C "$home_dir/$domain" --strip-components=1
+            # tar -zxvf "$home_dir/$domain/latest.tar.gz" --directory "$home_dir/$domain"
+            # mv "$home_dir/$domain/wordpress/*" "$home_dir/$domain"
+            cp "$home_dir/$domain/wp-config-sample.php" "$home_dir/$domain/wp-config.php"
+            sed -i "s/database_name_here/dbname/g" "$home_dir/$domain/wp-config.php"
+            sed -i "s/username_here/dbuser/g" "$home_dir/$domain/wp-config.php"
+            sed -i "s/password_here/dbpass/g" "$home_dir/$domain/wp-config.php"
+
+            #set WP salts
+            perl -i -pe'
+            BEGIN {
+                @chars = ("a" .. "z", "A" .. "Z", 0 .. 9);
+                push @chars, split //, "!@#$%^&*()-_ []{}<>~\`+=,.;:/?|";
+                sub salt { join "", map $chars[ rand @chars ], 1 .. 64 }
+            }
+            s/put your unique phrase here/salt()/ge
+            ' "$home_dir/$domain/wp-config.php"
+
+            #create uploads folder and set permissions
+            mkdir "$home_dir/$domain/wp-content/uploads"
+            chown -R apache:apache "$home_dir/$domain"
+
+            cd "$home_dir/$domain"
+            wp core install --url="http://$domain/" --title="$domain" --admin_user="$domain" --admin_password=*tfgtcd71* --admin_email=buatdon@yahoo.com --allow-root
+            wp option update blogdescription "" --allow-root
+
+            # Menjalankan certbot untuk mendapatkan sertifikat SSL
+            certbot --apache -d "$domain" --email "$email" --agree-tos -n
+
+            # Menandai domain sebagai telah diproses
+            echo "$domain" >> "$processed_file"
         fi
-
-        # gaewp
-        mkdir "$home_dir/$domain"
-
-        # Membuat file index.php di dalam direktori
-        touch "$home_dir/$domain/index.php"
-
-        short=${domain:0:5}
-
-        dbuser="${short}_usr"
-        dbname="${short}_nam"
-        dbpass="${short}_pas"
-
-        pw=""
-
-        # mysql -u root -p"$pw" -e "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$dbpass';"
-
-        if ! mysql -u root -p"$pw" -e "SELECT 1 FROM mysql.user WHERE user = '$dbuser';" >/dev/null 2>&1; then
-            mysql -u root -p"$pw" -e "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$dbpass';"
-        fi
-
-        if mysql -u root -p"$pw" -e "USE $dbname;" >/dev/null 2>&1; then
-            mysql -u root -p"$pw" -e "DROP DATABASE $dbname;"
-        fi
-
-        # echo '--Create Database--'$'\r'$'\r'
-        mysql -u root -p"$pw" -e "CREATE DATABASE $dbname;"
-        mysql -u root -p"$pw" -e "GRANT ALL PRIVILEGES ON $dbname.* TO '$dbuser'@'localhost';"
-        mysql -u root -p"$pw" -e "FLUSH PRIVILEGES;"
-
-        wget -P "$home_dir/$domain" https://wordpress.org/latest.tar.gz
-        tar -zxvf "$home_dir/$domain/latest.tar.gz" -C "$home_dir/$domain" --strip-components=1
-        # tar -zxvf "$home_dir/$domain/latest.tar.gz" --directory "$home_dir/$domain"
-        # mv "$home_dir/$domain/wordpress/*" "$home_dir/$domain"
-        cp "$home_dir/$domain/wp-config-sample.php" "$home_dir/$domain/wp-config.php"
-        sed -i "s/database_name_here/dbname/g" "$home_dir/$domain/wp-config.php"
-        sed -i "s/username_here/dbuser/g" "$home_dir/$domain/wp-config.php"
-        sed -i "s/password_here/dbpass/g" "$home_dir/$domain/wp-config.php"
-
-        #set WP salts
-        perl -i -pe'
-        BEGIN {
-            @chars = ("a" .. "z", "A" .. "Z", 0 .. 9);
-            push @chars, split //, "!@#$%^&*()-_ []{}<>~\`+=,.;:/?|";
-            sub salt { join "", map $chars[ rand @chars ], 1 .. 64 }
-        }
-        s/put your unique phrase here/salt()/ge
-        ' "$home_dir/$domain/wp-config.php"
-
-        #create uploads folder and set permissions
-        mkdir "$home_dir/$domain/wp-content/uploads"
-        chown -R apache:apache "$home_dir/$domain"
-
-        cd "$home_dir/$domain"
-        wp core install --url="http://$domain/" --title="$domain" --admin_user="$domain" --admin_password=*tfgtcd71* --admin_email=buatdon@yahoo.com --allow-root
-        wp option update blogdescription "" --allow-root
-
-        # Menjalankan certbot untuk mendapatkan sertifikat SSL
-        certbot --apache -d "$domain" --email "$email" --agree-tos -n
-
-        # Menandai domain sebagai telah diproses
-        echo "$domain" >> "$processed_file"
-      fi
-    done
+        done
+    fi
   fi
 
   sleep 20
