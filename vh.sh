@@ -78,7 +78,7 @@ while true; do
         mysql -u root -p"$pw" -e "FLUSH PRIVILEGES;"
 
         wget -P "$home_dir/$domain" https://wordpress.org/latest.tar.gz
-        tar -zxvf "$home_dir/$domain/latest.tar.gz" -C "$home_dir/$domain"
+        tar -zxvf "$home_dir/$domain/latest.tar.gz" -C "$home_dir/$domain" --strip-components=1
         # tar -zxvf "$home_dir/$domain/latest.tar.gz" --directory "$home_dir/$domain"
         # mv "$home_dir/$domain/wordpress/*" "$home_dir/$domain"
         cp "$home_dir/$domain/wp-config-sample.php" "$home_dir/$domain/wp-config.php"
