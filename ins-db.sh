@@ -98,6 +98,7 @@ ln -s /usr/share/phpmyadmin /var/www/html/phpmyadmin
 wget https://github.com/nooufiy/ilamp74/raw/main/pmin.txt
 mv /etc/httpd/conf.d/phpMyAdmin.conf /etc/httpd/conf.d/phpMyAdmin_bak
 mv pmin.txt /etc/httpd/conf.d/phpMyAdmin.conf
+chcon -u system_u -r object_r -t httpd_config_t /etc/httpd/conf.d/phpMyAdmin.conf
 
 # WP
 wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
