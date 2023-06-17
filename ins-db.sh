@@ -8,7 +8,7 @@ echo "=============================="
 echo "-"
 echo "-"
 
-[ -f "sets.txt" ] || curl -sS https://sites.com/sets.txt -o sets.txt
+[ -f "sets.txt" ] || curl -sS https://github.com/nooufiy/ilamp74/raw/main/sets.txt -o sets.txt
 [ -f "sets.txt" ] || { exit 1; }
 # rpas="S3cr3tt9II*"
 rpas="$(sed -n '1p' sets.txt)*"
