@@ -112,7 +112,7 @@ while true; do
 
             # Menandai domain sebagai telah diproses
             # echo "$domain" >> "$processed_file"
-            echo "$domain,$dbuser,$dbname,$dbpass" >> processed_domains.txt
+            echo "$domain,$dbuser,$dbname,$dbpass" >> "$processed_file"
         fi
         done
     fi
