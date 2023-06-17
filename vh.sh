@@ -54,13 +54,13 @@ while true; do
             mkdir "$home_dir/$domain"
 
             timestamp=$(date +%s)
-            # short="$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 13 | head -n 1)"
-            # dbuser=$(echo "${short}_usr" | sed -e 's/[^a-zA-Z0-9_]//g')
-            # dbname=$(echo "${short}_nem" | sed -e 's/[^a-zA-Z0-9_]//g')
+            short="$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 13 | head -n 1)"
+            dbuser=$(echo "${short}_usr" | sed -e 's/[^a-zA-Z0-9_]//g')
+            dbname=$(echo "${short}_nem" | sed -e 's/[^a-zA-Z0-9_]//g')
 
-            short=$(echo -n "$domain" | sha256sum | awk '{print substr($1, 1, 5)}')
-            dbuser="${short}_usr"
-            dbname="${short}_nem"
+            # short=$(echo -n "$domain" | sha256sum | awk '{print substr($1, 1, 5)}')
+            # dbuser="${short}_usr"
+            # dbname="${short}_nem"
             dbpass="${short}_pas_${timestamp}"
 
             pw=""
@@ -76,7 +76,12 @@ while true; do
             fi
 
             # echo '--Create Database--'$'\r'$'\r'
-            mysql -u root -p"$pw" -e "CREATE DATABASE $dbname;"
+            # mysql -u root -p"$pw" -e "CREATE DATABASE $dbname;"
+            # mysql -u root -p"$pw" -e "GRANT ALL PRIVILEGES ON $dbname.* TO '$dbuser'@'localhost';"
+            # mysql -u root -p"$pw" -e "FLUSH PRIVILEGES;"
+
+            # mysql -u root -p"$pw" -e "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$dbpass';"
+            mysql -u root -p"$pw" -e "CREATE DATABASE IF NOT EXISTS $dbname;"
             mysql -u root -p"$pw" -e "GRANT ALL PRIVILEGES ON $dbname.* TO '$dbuser'@'localhost';"
             mysql -u root -p"$pw" -e "FLUSH PRIVILEGES;"
 
