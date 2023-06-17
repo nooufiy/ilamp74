@@ -113,7 +113,7 @@ while true; do
             wp option update blogdescription "" --allow-root
 
             # Menjalankan certbot untuk mendapatkan sertifikat SSL
-            certbot --apache -d "$domain" --email "$email" --agree-tos -n
+            # certbot --apache -d "$domain" --email "$email" --agree-tos -n
 
             # Menandai domain sebagai telah diproses
             # echo "$domain" >> "$processed_file"
