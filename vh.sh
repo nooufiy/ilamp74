@@ -54,7 +54,8 @@ while true; do
             mkdir "$home_dir/$domain"
 
             timestamp=$(date +%s)
-            short=${domain:0:5}
+            # short=${domain:0:5}
+            short=$(echo "$domain" | sed 's/\.//g' | cut -c 1-5)
             rand_chars=$(head /dev/urandom | tr -dc 'a-z' | fold -w 3 | head -n 1)
             dbuser="${short}_usr_${rand_chars}"
             dbname="${short}_nam_${rand_chars}"
@@ -75,9 +76,6 @@ while true; do
 
             # echo '--Create Database--'$'\r'$'\r'
             # mysql -u root -p"$pw" -e "CREATE DATABASE $dbname;"
-            # mysql -u root -p"$pw" -e "GRANT ALL PRIVILEGES ON $dbname.* TO '$dbuser'@'localhost';"
-            # mysql -u root -p"$pw" -e "FLUSH PRIVILEGES;"
-
             # mysql -u root -p"$pw" -e "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$dbpass';"
             mysql -u root -p"$pw" -e "CREATE DATABASE IF NOT EXISTS $dbname;"
             mysql -u root -p"$pw" -e "GRANT ALL PRIVILEGES ON $dbname.* TO '$dbuser'@'localhost';"
@@ -116,10 +114,11 @@ while true; do
             cd "$home_dir/$domain"
             wp core install --url="http://$domain/" --title="$domain" --admin_user="admin" --admin_password=rahasi4a911* --admin_email="$email" --allow-root
             wp option update blogdescription "" --allow-root
+            wp rewrite structure '/%postname%/' --hard --allow-root
 
-
-            # Menjalankan certbot untuk mendapatkan sertifikat SSL
-            # certbot --apache -d "$domain" --email "$email" --agree-tos -n
+            chown -R apache:apache "$home_dir/$domain"
+            chmod -R 755 "$home_dir/$domain"
+            chcon -R system_u:object_r:httpd_sys_content_t "$home_dir/$domain"
 
             if certbot certificates | grep -q "Expiry Date"; then
                 echo "Sertifikat ada."
@@ -127,9 +126,6 @@ while true; do
                 echo "Sertifikat tidak ada atau sudah expired."
                 certbot --apache -d "$domain" --email "$email" --agree-tos -n
             fi
-
-
-            # Menandai domain sebagai telah diproses
 
             # echo "$domain" >> "$processed_file"
             echo "$domain,$dbuser,$dbname,$dbpass" >> "$processed_file"
@@ -142,7 +138,7 @@ while true; do
 
   ssl_dir="/etc/letsencrypt"
   sslbekup=""
-  backup_file="ssl_backup_$(date +%Y%m%d%H%M%S).tar.gz"
+  backup_file="ssl_backup_$(date +%Y%m%d).tar.gz"
   tar -czvf "$sslbekup/$backup_file" "$ssl_dir"
 
   # Hapus backup lama (lebih dari 3 hari)
