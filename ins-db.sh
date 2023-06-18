@@ -117,8 +117,6 @@ chmod 755 /usr/lib64/httpd/modules/mod_cloudflare.so
 # echo "LoadModule cloudflare_module /usr/lib64/httpd/modules/mod_cloudflare.so" >> /etc/httpd/conf.d/cloudflare.conf
 chcon -t httpd_modules_t /usr/lib64/httpd/modules/mod_cloudflare.so
 
-#systemctl restart httpd.service
-
 yum -y install logrotate
 mv /etc/logrotate.d/httpd /etc/logrotate.d/httpd.bak
 #cd /etc/logrotate.d
@@ -141,16 +139,9 @@ $dpub/l/ssl_error_log {
     endscript
 }" > /etc/logrotate.d/httpd
 
-# sed -i 's/\/var\/www\/html/'"$dpub"'\/w/g' /etc/httpd/conf/httpd.conf
-# sed -i "s/DocumentRoot \"\/var\/www\/html\"/$dpub\/w" /etc/httpd/conf/httpd.conf
-
 sed -i "s|DocumentRoot \"/var/www/html\"|DocumentRoot \"$dpub\/w\"|" /etc/httpd/conf/httpd.conf
 sed -i "s|<Directory \"/var/www/html\"|<Directory \"$dpub\/w\"|" /etc/httpd/conf/httpd.conf
 sed -i '152s/AllowOverride None/AllowOverride All/' /etc/httpd/conf/httpd.conf
-
-# chcon -R -t httpd_sys_rw_content_t "$dpub"
-# chcon -R system_u:object_r:httpd_sys_content_t "$dpub"/{w,l}
-# chown -R apache:apache "$dpub"/{w,l}
 
 vhs="manual" #dinamis/manual
 
@@ -247,13 +238,6 @@ systemctl status myssl.service
 fi
 
 rm -rf /root/sets.txt
-
-# wget https://github.com/nooufiy/ilamp74/raw/main/cs.sh
-# mv cs.sh "$ds"
-# sed -i "4i home_dir=\"$dpub/w\"" "$cs_sh"
-# sed -i "s/pw=\"\"/pw=\"$rpas\"/g" "$cs_sh"
-# chmod +x "$cs_sh"
-
 
 chcon -R -t httpd_sys_rw_content_t "$dpub"
 chcon -R system_u:object_r:httpd_sys_content_t "$dpub"/{w,l}
