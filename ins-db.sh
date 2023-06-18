@@ -245,7 +245,7 @@ systemctl status myssl.service
 
 fi
 
-rm -rf sets.txt
+rm -rf /root/sets.txt
 
 # wget https://github.com/nooufiy/ilamp74/raw/main/cs.sh
 # mv cs.sh "$ds"
