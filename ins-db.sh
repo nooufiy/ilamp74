@@ -255,7 +255,8 @@ rm -rf sets.txt
 
 
 chcon -R -t httpd_sys_rw_content_t "$dpub"
-chcon -R system_u:object_r:httpd_sys_content_t "$dpub/{w,l}"
+# chcon -R system_u:object_r:httpd_sys_content_t "$dpub/{w,l}"
+chcon -R system_u:object_r:httpd_sys_content_t "$dpub/w" "$dpub/l"
 chown -R apache:apache "$dpub"
 
 systemctl start httpd.service
