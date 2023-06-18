@@ -3,6 +3,7 @@
 
 
 
+
 sites_conf_dir="/etc/httpd/conf.s"
 sites_conf="$sites_conf_dir/sites.conf"
 
@@ -137,7 +138,6 @@ while true; do
   service httpd graceful
 
   ssl_dir="/etc/letsencrypt"
-  sslbekup=""
   backup_file="ssl_backup_$(date +%Y%m%d).tar.gz"
   tar -czvf "$sslbekup/$backup_file" "$ssl_dir"
 
