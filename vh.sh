@@ -138,5 +138,11 @@ while true; do
   backup_file="ssl_backup_$(date +%Y%m%d%H%M%S).tar.gz"
   tar -czvf "$sslbekup/$backup_file" "$ssl_dir"
 
+  # Hapus backup lama (lebih dari 3 hari)
+  old_backups=$(find "$sslbekup" -name "ssl_backup_*.tar.gz" -type f -mtime +3)
+  if [[ -n $old_backups ]]; then
+      rm -f $old_backups
+  fi
+
   sleep 20
 done
