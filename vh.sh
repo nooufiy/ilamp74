@@ -54,22 +54,11 @@ while true; do
             mkdir "$home_dir/$domain"
 
             timestamp=$(date +%s)
-            # short="$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 13 | head -n 1)"
-            # dbuser=$(echo "${short}_usr" | sed -e 's/[^a-zA-Z0-9_]//g')
-            # dbname=$(echo "${short}_nem" | sed -e 's/[^a-zA-Z0-9_]//g')
-
             short=${domain:0:5}
-            # dbuser="${short}_usr"
-            # dbname="${short}_nam"
-            # dbpass="${short}_pas"
+            rand_chars=$(head /dev/urandom | tr -dc 'a-z' | fold -w 3 | head -n 1)
+            dbuser="${short}_usr_${rand_chars}"
+            dbname="${short}_nam_${rand_chars}"
 
-
-            # short=$(echo -n "$domain" | sha256sum | awk '{print substr($1, 1, 5)}')
-            # dbuser="${short}_usr"
-            # dbname="${short}_nem"
-            
-            dbuser="$(echo "${short}_usr_$(date +%s%N | sha256sum | base64 | head -c8)")"
-            dbname="$(echo "${short}_nam_$(date +%s%N | sha256sum | base64 | head -c8)")"
             dbpass="${short}_pas_${timestamp}"
 
             pw=""
