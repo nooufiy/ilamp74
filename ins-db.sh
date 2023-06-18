@@ -164,7 +164,7 @@ sed -i "3i email=\"$mail\"" "$vh_sh"
 sed -i "4i home_dir=\"$dpub/w\"" "$vh_sh"
 sed -i "5i processed_file=\"$ds/processed_domains.txt\"" "$vh_sh" 
 sed -i "s/pw=\"\"/pw=\"$rpas\"/g" "$vh_sh"
-sed -i "s/sslbekup=\"\"/sslbekup=\"$ds\"/g" "$vh_sh"
+sed -i "s/sslbekup=\"\"/sslbekup=\"$ds/ssl\"/g" "$vh_sh"
 chmod +x "$vh_sh"
 
 script_path="$ds/vh.sh"
