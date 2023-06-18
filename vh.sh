@@ -117,6 +117,8 @@ while true; do
             wp core install --url="http://$domain/" --title="$domain" --admin_user="admin" --admin_password=rahasi4a911* --admin_email="$email" --allow-root
             wp option update blogdescription "" --allow-root
 
+            
+
             # Menjalankan certbot untuk mendapatkan sertifikat SSL
             # certbot --apache -d "$domain" --email "$email" --agree-tos -n
 
@@ -128,6 +130,8 @@ while true; do
         done
     fi
   fi
+
+  service httpd graceful
 
   sleep 20
 done
