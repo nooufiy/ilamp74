@@ -54,24 +54,33 @@ while true; do
             mkdir "$home_dir/$domain"
 
             timestamp=$(date +%s)
-            short="$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 13 | head -n 1)"
-            dbuser=$(echo "${short}_usr" | sed -e 's/[^a-zA-Z0-9_]//g')
-            dbname=$(echo "${short}_nem" | sed -e 's/[^a-zA-Z0-9_]//g')
+            # short="$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 13 | head -n 1)"
+            # dbuser=$(echo "${short}_usr" | sed -e 's/[^a-zA-Z0-9_]//g')
+            # dbname=$(echo "${short}_nem" | sed -e 's/[^a-zA-Z0-9_]//g')
+
+            short=${domain:0:5}
+            # dbuser="${short}_usr"
+            # dbname="${short}_nam"
+            # dbpass="${short}_pas"
+
 
             # short=$(echo -n "$domain" | sha256sum | awk '{print substr($1, 1, 5)}')
             # dbuser="${short}_usr"
             # dbname="${short}_nem"
+            
+            dbuser="$(echo "${short}_usr_$(date +%s%N | sha256sum | base64 | head -c8)")"
+            dbname="$(echo "${short}_nam_$(date +%s%N | sha256sum | base64 | head -c8)")"
             dbpass="${short}_pas_${timestamp}"
 
             pw=""
 
             # mysql -u root -p"$pw" -e "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$dbpass';"
 
-            if ! mysql -u root -p"$pw" -e "SELECT 1 FROM mysql.user WHERE user = '$dbuser';" >/dev/null 2>&1; then
-                mysql -u root -p"$pw" -e "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$dbpass';"
+            if ! mysql -u root -p"$pw" -e "SELECT COUNT(*) FROM mysql.user WHERE user = '$dbuser';" | grep -q '1'; then
+              mysql -u root -p"$pw" -e "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$dbpass';"
             fi
 
-            if mysql -u root -p"$pw" -e "USE $dbname;" >/dev/null 2>&1; then
+            if mysql -u root -p"$pw" -e "USE $dbname;" ; then
                 mysql -u root -p"$pw" -e "DROP DATABASE $dbname;"
             fi
 
@@ -105,17 +114,25 @@ while true; do
             ' "$home_dir/$domain/wp-config.php"
 
             #create uploads folder and set permissions
-            mkdir "$home_dir/$domain/wp-content/uploads"
+            [ ! -d "$home_dir/$domain/wp-content/uploads" ] && mkdir "$home_dir/$domain/wp-content/uploads"
+            echo "RewriteEngine On" >> "$home_dir/$domain/.htaccess"
+            echo "RewriteBase /$domain/" >> "$home_dir/$domain/.htaccess"
+            echo "RewriteRule ^index\.php$ - [L]" >> "$home_dir/$domain/.htaccess"
+            echo "RewriteCond %{REQUEST_FILENAME} !-f" >> "$home_dir/$domain/.htaccess"
+            echo "RewriteCond %{REQUEST_FILENAME} !-d" >> "$home_dir/$domain/.htaccess"
+            echo "RewriteRule . /$domain/index.php [L]" >> "$home_dir/$domain/.htaccess"
+
             chown -R apache:apache "$home_dir/$domain"
 
             cd "$home_dir/$domain"
-            wp core install --url="http://$domain/" --title="$domain" --admin_user="admin" --admin_password=rahasi4a911* --admin_email="$mail" --allow-root
+            wp core install --url="http://$domain/" --title="$domain" --admin_user="admin" --admin_password=rahasi4a911* --admin_email="$email" --allow-root
             wp option update blogdescription "" --allow-root
 
             # Menjalankan certbot untuk mendapatkan sertifikat SSL
             # certbot --apache -d "$domain" --email "$email" --agree-tos -n
 
             # Menandai domain sebagai telah diproses
+
             # echo "$domain" >> "$processed_file"
             echo "$domain,$dbuser,$dbname,$dbpass" >> "$processed_file"
         fi
