@@ -2,9 +2,9 @@
 
 
 
+
 sites_conf_dir="/etc/httpd/conf.s"
 sites_conf="$sites_conf_dir/sites.conf"
-processed_file="/rs/processed_domains.txt"
 
 # Fungsi untuk menulis ke file sites.conf
 write_to_sites_conf() {
@@ -132,6 +132,11 @@ while true; do
   fi
 
   service httpd graceful
+
+  ssl_dir="/etc/letsencrypt"
+  sslbekup=""
+  backup_file="ssl_backup_$(date +%Y%m%d%H%M%S).tar.gz"
+  tar -czvf "$sslbekup/$backup_file" "$ssl_dir"
 
   sleep 20
 done
