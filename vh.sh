@@ -84,12 +84,24 @@ while true; do
             [ ! -d "$home_dir/$domain/wp-content/uploads" ] && mkdir "$home_dir/$domain/wp-content/uploads"
 
             cd "$home_dir/$domain"
+
+            htawp="# BEGIN WordPress\n\n\
+            RewriteEngine On\n\
+            RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]\n\
+            RewriteBase /\n\
+            RewriteRule ^index\.php$ - [L]\n\
+            RewriteCond %{REQUEST_FILENAME} !-f\n\
+            RewriteCond %{REQUEST_FILENAME} !-d\n\
+            RewriteRule . /index.php [L]\n\n\
+            # END WordPress\n"
+            echo -e "$htawp" > "$home_dir/$domain/.htaccess"
+
             wp core install --url="http://$domain/" --title="$domain" --admin_user="admin" --admin_password=rahasi4a911* --admin_email="$email" --allow-root
             wp option update blogdescription "" --allow-root
             wp rewrite structure '/%postname%/' --hard --allow-root
 
             chown -R apache:apache "$home_dir/$domain"
-            chmod -R 755 "$home_dir/$domain"
+            # chmod -R 755 "$home_dir/$domain"
             chcon -R system_u:object_r:httpd_sys_content_t "$home_dir/$domain"
 
             if certbot certificates | grep -q "Expiry Date"; then
