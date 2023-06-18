@@ -1,9 +1,5 @@
 #!/bin/bash
 
-
-
-
-
 sites_conf_dir="/etc/httpd/conf.s"
 sites_conf="$sites_conf_dir/sites.conf"
 
@@ -103,12 +99,18 @@ while true; do
 
             #create uploads folder and set permissions
             [ ! -d "$home_dir/$domain/wp-content/uploads" ] && mkdir "$home_dir/$domain/wp-content/uploads"
-            echo "RewriteEngine On" >> "$home_dir/$domain/.htaccess"
-            echo "RewriteBase /$domain/" >> "$home_dir/$domain/.htaccess"
-            echo "RewriteRule ^index\.php$ - [L]" >> "$home_dir/$domain/.htaccess"
-            echo "RewriteCond %{REQUEST_FILENAME} !-f" >> "$home_dir/$domain/.htaccess"
-            echo "RewriteCond %{REQUEST_FILENAME} !-d" >> "$home_dir/$domain/.htaccess"
-            echo "RewriteRule . /$domain/index.php [L]" >> "$home_dir/$domain/.htaccess"
+
+            # htawp="# BEGIN WordPress\n\n\
+            # RewriteEngine On\n\
+            # RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]\n\
+            # RewriteBase /\n\
+            # RewriteRule ^index\.php$ - [L]\n\
+            # RewriteCond %{REQUEST_FILENAME} !-f\n\
+            # RewriteCond %{REQUEST_FILENAME} !-d\n\
+            # RewriteRule . /index.php [L]\n\n\
+            # # END WordPress\n"
+
+            # echo -e "$htawp" > "$home_dir/$domain/.htaccess"
 
             chown -R apache:apache "$home_dir/$domain"
 
