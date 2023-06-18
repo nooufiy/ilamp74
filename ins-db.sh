@@ -14,7 +14,7 @@ cs_sh="$ds/cs.sh"
 vh_sh="$ds/vh.sh"
 ssl_sh="$ds/ssl.sh"
 mkdir -p "$dpub"/{w,l}
-mkdir -p "$ds"
+mkdir -p "$ds/ssl"
 
 > "$dpub"/w/index.php
 # mv /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.bak
