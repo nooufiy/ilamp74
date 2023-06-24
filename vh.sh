@@ -114,10 +114,10 @@ while true; do
             echo "$domain,$dbuser,$dbname,$dbpass" >> "$processed_file"
         fi
         done
+      service httpd graceful
     fi
   fi
 
-  service httpd graceful
 
   ssl_dir="/etc/letsencrypt"
   backup_file="ssl_backup_$(date +%Y%m%d).tar.gz"
