@@ -23,10 +23,21 @@ if [[ ! -f "$processed_file" ]]; then
   touch "$processed_file"
 fi
 
+htawp="# BEGIN WordPress\n\n\
+RewriteEngine On\n\
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]\n\
+RewriteBase /\n\
+RewriteRule ^index\.php$ - [L]\n\
+RewriteCond %{REQUEST_FILENAME} !-f\n\
+RewriteCond %{REQUEST_FILENAME} !-d\n\
+RewriteRule . /index.php [L]\n\n\
+# END WordPress\n"
+
 while true; do
   
   if [[ -f "$home_dir/domains.txt" && -s "$home_dir/domains.txt" ]]; then
-    domain_list=($(less "$home_dir/domains.txt"))
+    # domain_list=($(less "$home_dir/domains.txt"))
+    domain_list=($(sed 's/^[[:space:]]*//; s/[[:space:]]*$//' "$home_dir/domains.txt"))
 
     # Memeriksa apakah ada perubahan pada daftar domain/subdomain
     if [[ ! -z "${domain_list[*]}" ]]; then
@@ -92,15 +103,6 @@ while true; do
 
                 cd "$home_dir/$newdomain"
 
-                htawp="# BEGIN WordPress\n\n\
-                RewriteEngine On\n\
-                RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]\n\
-                RewriteBase /\n\
-                RewriteRule ^index\.php$ - [L]\n\
-                RewriteCond %{REQUEST_FILENAME} !-f\n\
-                RewriteCond %{REQUEST_FILENAME} !-d\n\
-                RewriteRule . /index.php [L]\n\n\
-                # END WordPress\n"
                 echo -e "$htawp" > "$home_dir/$newdomain/.htaccess"
 
                 wp core install --url="http://$newdomain/" --title="$newdomain" --admin_user="admin" --admin_password=rahasi4a911* --admin_email="$email" --allow-root
@@ -118,7 +120,9 @@ while true; do
                     certbot --apache -d "$newdomain" --email "$email" --agree-tos -n
                 fi
 
-                echo "$newdomain,$dbuser,$dbname,$dbpass" >> "$processed_file"
+                # echo "$newdomain,$dbuser,$dbname,$dbpass" >> "$processed_file"
+                cleaned_newdomain=$(echo "$newdomain" | tr -d '\r')
+				        echo "$cleaned_newdomain,$dbuser,$dbname,$dbpass" >> "$processed_file"
             done
             service httpd graceful
             
