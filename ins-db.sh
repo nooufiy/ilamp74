@@ -142,6 +142,8 @@ $dpub/l/ssl_error_log {
 sed -i "s|DocumentRoot \"/var/www/html\"|DocumentRoot \"$dpub\/w\"|" /etc/httpd/conf/httpd.conf
 sed -i "s|<Directory \"/var/www/html\"|<Directory \"$dpub\/w\"|" /etc/httpd/conf/httpd.conf
 sed -i '152s/AllowOverride None/AllowOverride All/' /etc/httpd/conf/httpd.conf
+sed -i 's/max_execution_time = 30/max_execution_time = 1500/g' /etc/php.ini
+sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 300M/g' /etc/php.ini
 
 vhs="manual" #dinamis/manual
 
