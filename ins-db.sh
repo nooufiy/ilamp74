@@ -9,6 +9,7 @@ echo "-"
 echo "-"
 
 nuser="admin"
+aport="7771"
 dpub="/sites"
 ds="/rs"
 cs_sh="$ds/cs.sh"
@@ -25,8 +26,8 @@ systemctl restart systemd-hostnamed
 hostnamectl status
 
 # ssh
-sed -i "s/#Port 22/Port 7771/" /etc/ssh/sshd_config
-semanage port -a -t ssh_port_t -p tcp 7771
+sed -i "s/#Port 22/Port $aport/" /etc/ssh/sshd_config
+semanage port -a -t ssh_port_t -p tcp "$aport"
 systemctl restart sshd
 
 # iptables -I INPUT -p tcp -m tcp --dport 80 -j ACCEPT
@@ -285,7 +286,7 @@ firewall-cmd --permanent --zone=public --add-service=https
 firewall-cmd --permanent --zone=public --add-service=mysql
 firewall-cmd --permanent --zone=public --add-service=smtp
 firewall-cmd --permanent --add-rich-rule='rule service name=ssh limit value="3/m" drop'
-firewall-cmd --permanent --zone=public --add-port=7771/tcp
+firewall-cmd --permanent --zone=public --add-port="$aport"/tcp
 firewall-cmd --reload
 systemctl start firewalld
 systemctl enable firewalld
