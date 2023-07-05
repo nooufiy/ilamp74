@@ -298,9 +298,6 @@ service firewalld status
 service sshd status
 service mysts status
 
-> goo.sh
-rm -rf goo.sh
-
 echo ""
 echo "== [DONE] =="
 echo ""
