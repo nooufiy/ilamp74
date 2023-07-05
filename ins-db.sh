@@ -285,6 +285,7 @@ firewall-cmd --permanent --zone=public --add-service=https
 firewall-cmd --permanent --zone=public --add-service=mysql
 firewall-cmd --permanent --zone=public --add-service=smtp
 firewall-cmd --permanent --add-rich-rule='rule service name=ssh limit value="3/m" drop'
+firewall-cmd --permanent --zone=public --add-port=7771/tcp
 firewall-cmd --reload
 systemctl start firewalld
 systemctl enable firewalld
