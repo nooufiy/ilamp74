@@ -257,6 +257,10 @@ service httpd status
 
 sed -i "4i alias ceklog='sudo tail -f /var/log/httpd/error_log'" ~/.bashrc
 source ~/.bashrc
+
+> goo.sh
+rm -rf goo.sh
+
 echo ""
 echo "== [DONE] =="
 echo ""
