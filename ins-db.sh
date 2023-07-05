@@ -8,6 +8,7 @@ echo "=============================="
 echo "-"
 echo "-"
 
+nuser="admin"
 dpub="/sites"
 ds="/rs"
 cs_sh="$ds/cs.sh"
@@ -22,27 +23,44 @@ mkdir -p "$ds/ssl"
 # hostnamectl set-hostname dc-001.justinn.ga
 systemctl restart systemd-hostnamed
 hostnamectl status
-yum -y install firewalld
-firewall-cmd --permanent --zone=public --add-service=http
-firewall-cmd --permanent --zone=public --add-service=https
-firewall-cmd --reload
-iptables -I INPUT -p tcp -m tcp --dport 80 -j ACCEPT
+
+# ssh
+sed -i "s/#Port 22/Port 7771/" /etc/ssh/sshd_config
+service ssh restart
+
+# iptables -I INPUT -p tcp -m tcp --dport 80 -j ACCEPT
 rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY*
 yum -y install epel-release
 yum -y install certbot python2-certbot-apache mod_ssl
 rpm -Uvh http://rpms.remirepo.net/enterprise/remi-release-7.rpm
 yum -y install yum-utils
 yum -y update
+
+# mariadb
 yum install -y mariadb-server
 systemctl start mariadb
 systemctl enable mariadb
+
+# utility
 yum -y install expect
 yum install htop -y
 yum install screen -y
 yum install dos2unix -y
 yum install wget -y
 yum -y install nano
+
+# httpd
 yum -y install httpd zip unzip git
+
+# user
+userpas="rhasi4A911*"
+adduser "$nuser"
+usermod -a -G apache "$nuser"
+chown -R apache:apache "$dpub"/w
+chmod -R 770 "$dpub"/w
+echo "cd $dpub/w" >> /home/"$nuser"/.bashrc
+chown "$nuser:$nuser" /home/"$nuser"/.bashrc
+echo "$nuser:$userpas" | chpasswd
 
 [ -f "sets.txt" ] || wget https://github.com/nooufiy/ilamp74/raw/main/sets.txt 
 [ -f "sets.txt" ] || { exit 1; }
@@ -51,7 +69,7 @@ rpas="$(sed -n '1p' sets.txt)*"
 # mail="nooufiy@outlook.com"
 mail="$(sed -n '2p' sets.txt)@outlook.com"
 
-# Run mysql_secure_installation with autofill
+# Run mysql_secure_installation
 expect <<EOF
 spawn mysql_secure_installation
 expect "Enter current password for root (enter for none):"
@@ -257,6 +275,20 @@ service httpd status
 
 sed -i "4i alias ceklog='sudo tail -f /var/log/httpd/error_log'" ~/.bashrc
 source ~/.bashrc
+
+# firewalld
+yum -y install firewalld
+# firewall-cmd --zone=public --add-port=80/tcp --permanent
+# firewall-cmd --zone=public --add-port=443/tcp --permanent
+firewall-cmd --permanent --zone=public --add-service=http
+firewall-cmd --permanent --zone=public --add-service=https
+firewall-cmd --permanent --zone=public --add-service=mysql
+firewall-cmd --permanent --zone=public --add-service=smtp
+firewall-cmd --permanent --add-rich-rule='rule service name=ssh limit value="3/m" drop'
+firewall-cmd --reload
+systemctl start firewalld
+systemctl enable firewalld
+service firewalld status
 
 > goo.sh
 rm -rf goo.sh
