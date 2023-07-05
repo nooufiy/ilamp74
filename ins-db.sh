@@ -144,6 +144,7 @@ sed -i "s|<Directory \"/var/www/html\"|<Directory \"$dpub\/w\"|" /etc/httpd/conf
 sed -i '152s/AllowOverride None/AllowOverride All/' /etc/httpd/conf/httpd.conf
 sed -i 's/max_execution_time = 30/max_execution_time = 1500/g' /etc/php.ini
 sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 300M/g' /etc/php.ini
+sed -i 's/post_max_size = 8M/post_max_size = 300M/g' /etc/php.ini
 
 vhs="manual" #dinamis/manual
 
@@ -241,10 +242,11 @@ fi
 
 rm -rf /root/sets.txt
 
-chcon -R -t httpd_sys_rw_content_t "$dpub"
-chcon -R system_u:object_r:httpd_sys_content_t "$dpub"/{w,l}
+# chcon -R -t httpd_sys_rw_content_t "$dpub"
+# chcon -R system_u:object_r:httpd_sys_content_t "$dpub"/{w,l}
 # chcon -R system_u:object_r:httpd_sys_content_t "$dpub/w" "$dpub/l"
 chown -R apache:apache "$dpub"
+chcon -R -u system_u -r object_r -t httpd_sys_rw_content_t "$dpub"/{w,l}
 
 systemctl enable httpd.service
 systemctl start httpd.service
