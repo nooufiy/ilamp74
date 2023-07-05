@@ -26,7 +26,8 @@ hostnamectl status
 
 # ssh
 sed -i "s/#Port 22/Port 7771/" /etc/ssh/sshd_config
-service ssh restart
+semanage port -a -t ssh_port_t -p tcp 7771
+systemctl restart sshd
 
 # iptables -I INPUT -p tcp -m tcp --dport 80 -j ACCEPT
 rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY*
@@ -202,7 +203,7 @@ EOF
 systemctl daemon-reload
 systemctl enable mysts.service
 systemctl start mysts.service
-systemctl status mysts.service
+# systemctl status mysts.service
 # service httpd restart
 
 else
@@ -270,8 +271,6 @@ systemctl enable httpd.service
 systemctl start httpd.service
 
 # service httpd restart
-service mariadb status
-service httpd status
 
 sed -i "4i alias ceklog='sudo tail -f /var/log/httpd/error_log'" ~/.bashrc
 source ~/.bashrc
@@ -280,6 +279,7 @@ source ~/.bashrc
 yum -y install firewalld
 # firewall-cmd --zone=public --add-port=80/tcp --permanent
 # firewall-cmd --zone=public --add-port=443/tcp --permanent
+sed -i 's/^AllowZoneDrifting=.*/AllowZoneDrifting=no/' /etc/firewalld/firewalld.conf
 firewall-cmd --permanent --zone=public --add-service=http
 firewall-cmd --permanent --zone=public --add-service=https
 firewall-cmd --permanent --zone=public --add-service=mysql
@@ -288,7 +288,13 @@ firewall-cmd --permanent --add-rich-rule='rule service name=ssh limit value="3/m
 firewall-cmd --reload
 systemctl start firewalld
 systemctl enable firewalld
+
+# service status
+service httpd status
+service mariadb status
 service firewalld status
+service sshd status
+service mysts status
 
 > goo.sh
 rm -rf goo.sh
