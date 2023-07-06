@@ -219,7 +219,6 @@ if ! grep -q "VirtualDocumentRoot" "$apache_conf"; then
   echo "VirtualDocumentRoot $sites_dir/%0" | sudo tee -a "$apache_conf" > /dev/null
 fi
 
-
 # Ssl
 
 wget https://github.com/nooufiy/ilamp74/raw/main/ssl.sh
@@ -271,7 +270,6 @@ systemctl start httpd.service
 sed -i "4i alias ceklog='sudo tail -f /var/log/httpd/error_log'" ~/.bashrc
 source ~/.bashrc
 
-
 # firewalld
 yum -y install firewalld
 # firewall-cmd --zone=public --add-port=80/tcp --permanent
@@ -282,8 +280,6 @@ firewall-cmd --permanent --zone=public --add-service=https
 firewall-cmd --permanent --zone=public --add-service=mysql
 firewall-cmd --permanent --zone=public --add-service=smtp
 # firewall-cmd --permanent --add-rich-rule='rule service name=ssh limit value="3/m" drop'
-# firewall-cmd --add-port 3477/tcp --permanent
-# firewall-cmd --add-port 3477/tcp
 systemctl restart firewalld
 systemctl enable firewalld
 
@@ -297,12 +293,9 @@ yum install policycoreutils -y
 yum whatprovides semanage
 yum provides *bin/semanage
 yum -y install policycoreutils-python
-# semanage port -a -t ssh_port_t -p tcp 3477
 semanage port -a -t ssh_port_t -p tcp "$aport"
-# sudo systemctl restart sshd.service
 systemctl restart sshd
 systemctl restart firewalld
-
 
 # service status
 service httpd status
