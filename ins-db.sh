@@ -288,8 +288,10 @@ firewall-cmd --permanent --zone=public --add-service=smtp
 # firewall-cmd --permanent --add-rich-rule='rule service name=ssh limit value="3/m" drop'
 firewall-cmd --permanent --zone=public --add-port="$aport"/tcp
 firewall-cmd --reload
-systemctl start firewalld
+systemctl restart firewalld
 systemctl enable firewalld
+
+service sshd restart
 
 # service status
 service httpd status
