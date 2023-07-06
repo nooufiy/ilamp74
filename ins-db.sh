@@ -9,7 +9,7 @@ echo "-"
 echo "-"
 
 nuser="admin"
-aport="7771"
+aport=7771
 dpub="/sites"
 ds="/rs"
 cs_sh="$ds/cs.sh"
@@ -282,9 +282,6 @@ firewall-cmd --permanent --zone=public --add-service=https
 firewall-cmd --permanent --zone=public --add-service=mysql
 firewall-cmd --permanent --zone=public --add-service=smtp
 # firewall-cmd --permanent --add-rich-rule='rule service name=ssh limit value="3/m" drop'
-firewall-cmd --permanent --zone=public --add-port="$aport"/tcp
-firewall-cmd --zone=public --add-port="$aport"/tcp
-firewall-cmd --reload
 # firewall-cmd --add-port 3477/tcp --permanent
 # firewall-cmd --add-port 3477/tcp
 systemctl restart firewalld
@@ -292,6 +289,9 @@ systemctl enable firewalld
 
 # ssh
 sed -i "s/#Port 22/Port $aport/" /etc/ssh/sshd_config
+firewall-cmd --permanent --zone=public --add-port="$aport"/tcp
+firewall-cmd --zone=public --add-port="$aport"/tcp
+firewall-cmd --reload
 
 yum install policycoreutils -y
 yum whatprovides semanage
@@ -301,6 +301,7 @@ yum -y install policycoreutils-python
 semanage port -a -t ssh_port_t -p tcp "$aport"
 # sudo systemctl restart sshd.service
 systemctl restart sshd
+systemctl restart firewalld
 
 
 # service status
