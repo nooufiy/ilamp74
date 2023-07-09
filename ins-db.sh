@@ -305,7 +305,7 @@ sed -i "s/#Port 22/Port $aport/" /etc/ssh/sshd_config
 firewall-cmd --permanent --zone=public --add-port="$aport"/tcp
 firewall-cmd --zone=public --add-port="$aport"/tcp
 firewall-cmd --reload
-firewall-cmd --zone=public --list-ports
+# firewall-cmd --zone=public --list-ports
 
 
 yum install policycoreutils -y
