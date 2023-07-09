@@ -255,10 +255,13 @@ systemctl status myssl.service
 fi
 
 #ssh2
-yum install -y libssh2 libssh2-devel gcc make php-devel
-pecl install ssh2-1.3.1
+# yum install -y libssh2 libssh2-devel gcc make php-devel
+yum install -y libssh2 libssh2-devel make
+pecl install ssh2
+# pecl install ssh2-1.3.1
 # echo "extension=ssh2.so" | sudo tee /etc/php.d/ssh2.ini
-echo "extension=ssh2.so" >> /etc/php.d/ssh2.ini
+# echo "extension=ssh2.so" >> /etc/php.d/ssh2.ini
+echo "extension=ssh2.so" | tee /etc/php.d/20-ssh2.ini
 
 rm -rf /root/sets.txt
 
