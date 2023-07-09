@@ -286,24 +286,27 @@ source ~/.bashrc
 
 # firewalld
 yum -y install firewalld
+sed -i 's/^AllowZoneDrifting=.*/AllowZoneDrifting=no/' /etc/firewalld/firewalld.conf
+systemctl enable firewalld
+systemctl start firewalld
 firewall-cmd --permanent --zone=public --add-port=80/tcp
 firewall-cmd --permanent --zone=public --add-port=443/tcp
 firewall-cmd --permanent --zone=public --add-port=3306/tcp
 firewall-cmd --permanent --zone=public --add-port=25/tcp
-sed -i 's/^AllowZoneDrifting=.*/AllowZoneDrifting=no/' /etc/firewalld/firewalld.conf
 firewall-cmd --permanent --zone=public --add-service=http
 firewall-cmd --permanent --zone=public --add-service=https
 firewall-cmd --permanent --zone=public --add-service=mysql
 firewall-cmd --permanent --zone=public --add-service=smtp
+firewall-cmd --reload
 # firewall-cmd --permanent --add-rich-rule='rule service name=ssh limit value="3/m" drop'
-systemctl restart firewalld
-systemctl enable firewalld
 
 # ssh
 sed -i "s/#Port 22/Port $aport/" /etc/ssh/sshd_config
 firewall-cmd --permanent --zone=public --add-port="$aport"/tcp
 firewall-cmd --zone=public --add-port="$aport"/tcp
 firewall-cmd --reload
+firewall-cmd --zone=public --list-ports
+
 
 yum install policycoreutils -y
 yum whatprovides semanage
