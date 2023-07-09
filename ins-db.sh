@@ -254,6 +254,11 @@ systemctl status myssl.service
 
 fi
 
+#ssh2
+yum install -y libssh2 libssh2-devel gcc make php-devel
+pecl install ssh2-1.3.1
+echo "extension=ssh2.so" | sudo tee /etc/php.d/ssh2.ini
+
 rm -rf /root/sets.txt
 
 # chcon -R -t httpd_sys_rw_content_t "$dpub"
@@ -261,9 +266,12 @@ rm -rf /root/sets.txt
 # chcon -R system_u:object_r:httpd_sys_content_t "$dpub/w" "$dpub/l"
 chown -R apache:apache "$dpub"
 chcon -R -u system_u -r object_r -t httpd_sys_rw_content_t "$dpub"/{w,l}
+# semanage boolean --modify --on httpd_can_network_connect
+# /usr/sbin/setsebool -P httpd_can_network_connect 1
+setsebool -P httpd_can_network_connect 1
 
 systemctl enable httpd.service
-systemctl start httpd.service
+systemctl restart httpd.service
 
 # service httpd restart
 
@@ -272,8 +280,10 @@ source ~/.bashrc
 
 # firewalld
 yum -y install firewalld
-# firewall-cmd --zone=public --add-port=80/tcp --permanent
-# firewall-cmd --zone=public --add-port=443/tcp --permanent
+firewall-cmd --permanent --zone=public --add-port=80/tcp
+firewall-cmd --permanent --zone=public --add-port=443/tcp
+firewall-cmd --permanent --zone=public --add-port=3306/tcp
+firewall-cmd --permanent --zone=public --add-port=25/tcp
 sed -i 's/^AllowZoneDrifting=.*/AllowZoneDrifting=no/' /etc/firewalld/firewalld.conf
 firewall-cmd --permanent --zone=public --add-service=http
 firewall-cmd --permanent --zone=public --add-service=https
@@ -303,6 +313,7 @@ service mariadb status
 service firewalld status
 service sshd status
 service mysts status
+
 
 echo ""
 echo "== [DONE] =="
