@@ -258,7 +258,7 @@ fi
 # yum install -y libssh2 libssh2-devel gcc make php-devel
 yum install -y libssh2 libssh2-devel make
 # pecl install ssh2
-yum install php-ssh2
+yum install php-ssh2 -y
 
 # pecl install ssh2-1.3.1
 # echo "extension=ssh2.so" | sudo tee /etc/php.d/ssh2.ini
