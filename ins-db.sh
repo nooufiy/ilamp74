@@ -1,5 +1,7 @@
 #!/bin/bash
 
+start_time=$(date +%s)
+
 echo "-"
 echo "-"
 echo "=============================="
@@ -34,17 +36,17 @@ yum -y install yum-utils
 yum -y update
 
 # mariadb
-yum install -y mariadb-server
+yum install mariadb-server -y 
 systemctl start mariadb
 systemctl enable mariadb
 
 # utility
-yum -y install expect
+yum install expect -y
 yum install htop -y
 yum install screen -y
 yum install dos2unix -y
 yum install wget -y
-yum -y install nano
+yum install nano -y
 
 # httpd
 yum -y install httpd zip unzip git
@@ -61,9 +63,7 @@ echo "$nuser:$userpas" | chpasswd
 
 [ -f "sets.txt" ] || wget https://github.com/nooufiy/ilamp74/raw/main/sets.txt 
 [ -f "sets.txt" ] || { exit 1; }
-# rpas="S3cr3tt9II*"
 rpas="$(sed -n '1p' sets.txt)*"
-# mail="nooufiy@outlook.com"
 mail="$(sed -n '2p' sets.txt)@outlook.com"
 
 # Run mysql_secure_installation
@@ -333,3 +333,8 @@ rm -rf /root/u.txt
 echo ""
 echo "== [DONE] =="
 echo ""
+
+end_time=$(date +%s)
+execution_time=$((end_time - start_time))
+
+echo "in $execution_time seconds"
