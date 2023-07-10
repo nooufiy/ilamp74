@@ -338,4 +338,4 @@ end_time=$(date +%s)
 execution_time=$((end_time - start_time))
 
 echo "in $execution_time seconds"
-echo "done in $execution_time seconds" > done.txt
+echo "done in $execution_time seconds" > /root/done.txt
