@@ -323,6 +323,11 @@ service firewalld status
 service sshd status
 service mysts status
 
+# finish
+yusr=$(cat u.txt)
+trimmed=$(echo "$yusr" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/"//g')
+IFS="_" read -r ip user status url <<< "$yusr"
+curl -X POST -d "data=$trimmed" "$url/srv/"
 
 echo ""
 echo "== [DONE] =="
