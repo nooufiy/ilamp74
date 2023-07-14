@@ -271,6 +271,7 @@ rm -rf /root/sets.txt
 # chcon -R system_u:object_r:httpd_sys_content_t "$dpub"/{w,l}
 # chcon -R system_u:object_r:httpd_sys_content_t "$dpub/w" "$dpub/l"
 chown -R apache:apache "$dpub"
+chcon -R system_u:object_r:httpd_sys_content_t "$dpub"/{w,l}
 chcon -R -u system_u -r object_r -t httpd_sys_rw_content_t "$dpub"/{w,l}
 # semanage boolean --modify --on httpd_can_network_connect
 # /usr/sbin/setsebool -P httpd_can_network_connect 1
