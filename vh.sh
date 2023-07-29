@@ -45,7 +45,8 @@ while true; do
 
         # Loop untuk setiap domain/subdomain
         for domain in "${domain_list[@]}"; do
-            if ! grep -q "$domain" "$processed_file"; then
+            # if ! grep -q "$domain" "$processed_file"; then
+            if ! grep -q -E "\b$domain\b" "$processed_file"; then
                 new_domains+=("$domain") # Menambahkan domain yang belum dieksekusi ke dalam array new_domains
             fi
         done
@@ -111,13 +112,25 @@ while true; do
 
                 chown -R apache:apache "$home_dir/$newdomain"
                 # chmod -R 755 "$home_dir/$newdomain"
-                chcon -R system_u:object_r:httpd_sys_content_t "$home_dir/$newdomain"
+                # chcon -R system_u:object_r:httpd_sys_content_t "$home_dir/$newdomain"
+                chcon -R -u system_u -r object_r -t httpd_sys_rw_content_t "$home_dir/$newdomain"
 
                 if certbot certificates | grep -q "Expiry Date"; then
                     echo "Sertifikat ada."
                 else
                     echo "Sertifikat tidak ada atau sudah expired."
-                    certbot --apache -d "$newdomain" --email "$email" --agree-tos -n
+                    # certbot --apache -d "$newdomain" --email "$email" --agree-tos -n
+
+                    # Hitung jumlah titik dalam string
+                    num_dots=$(echo "$newdomain" | tr -cd '.' | wc -c)
+                    # Cek apakah jumlah titik adalah satu
+                    if [ "$num_dots" -eq 1 ]; then
+                        # echo "Jumlah titik adalah satu."
+                        certbot --apache -d "$newdomain" -d "www.$newdomain" --email "$email" --agree-tos -n
+                    else
+                        certbot --apache -d "$newdomain" --email "$email" --agree-tos -n
+                    fi
+
                 fi
 
                 # echo "$newdomain,$dbuser,$dbname,$dbpass" >> "$processed_file"
