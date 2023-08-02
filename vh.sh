@@ -112,7 +112,7 @@ while true; do
 
                 chown -R apache:apache "$home_dir/$newdomain"
                 # chmod -R 755 "$home_dir/$newdomain"
-                # chcon -R system_u:object_r:httpd_sys_content_t "$home_dir/$newdomain"
+                chcon -R system_u:object_r:httpd_sys_content_t "$home_dir/$newdomain"
                 chcon -R -u system_u -r object_r -t httpd_sys_rw_content_t "$home_dir/$newdomain"
 
                 if certbot certificates | grep -q "Expiry Date"; then
@@ -130,14 +130,13 @@ while true; do
                     else
                         certbot --apache -d "$newdomain" --email "$email" --agree-tos -n
                     fi
-
                 fi
 
                 # echo "$newdomain,$dbuser,$dbname,$dbpass" >> "$processed_file"
                 cleaned_newdomain=$(echo "$newdomain" | tr -d '\r')
-				        echo "$cleaned_newdomain,$dbuser,$dbname,$dbpass" >> "$processed_file"
+				echo "$cleaned_newdomain,$dbuser,$dbname,$dbpass" >> "$processed_file"
+                service httpd graceful
             done
-            service httpd graceful
             
             ssl_dir="/etc/letsencrypt"
             backup_file="ssl_backup_$(date +%Y%m%d).tar.gz"
