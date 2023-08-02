@@ -267,6 +267,7 @@ echo "extension=ssh2.so" | tee /etc/php.d/20-ssh2.ini
 
 rm -rf /root/sets.txt
 
+sed -i "97i ServerName localhost" /etc/httpd/conf/httpd.conf
 # chcon -R -t httpd_sys_rw_content_t "$dpub"
 # chcon -R system_u:object_r:httpd_sys_content_t "$dpub"/{w,l}
 # chcon -R system_u:object_r:httpd_sys_content_t "$dpub/w" "$dpub/l"
@@ -284,6 +285,9 @@ systemctl restart httpd.service
 
 sed -i "4i alias ceklog='sudo tail -f /var/log/httpd/error_log'" ~/.bashrc
 source ~/.bashrc
+
+# Aktifkan SELinux jika belum aktif
+sestatus | grep -q 'disabled' && sudo sed -i 's/^SELINUX=.*/SELINUX=enforcing/' /etc/selinux/config && sudo setenforce 1
 
 # firewalld
 yum -y install firewalld
