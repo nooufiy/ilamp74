@@ -331,7 +331,7 @@ service mysts status
 # finish
 yusr=$(cat /root/u.txt)
 trimmed=$(echo "$yusr" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/"//g')
-IFS="_" read -r ip user status url <<< "$trimmed"
+IFS="_" read -r ip user userid status url <<< "$trimmed"
 curl -X POST -d "data=$trimmed" "$url/srv/"
 rm -rf /root/u.txt
 
