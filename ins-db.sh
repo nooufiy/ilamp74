@@ -143,16 +143,19 @@ $dpub/l/error_log
 $dpub/l/ssl_error_log {
     daily
     missingok
-    rotate 7
+    rotate 30
     compress
     delaycompress
     notifempty
     create 640 root adm
     sharedscripts
+    dateext
+    dateformat -%Y-%m-%d
     postrotate
         /bin/systemctl reload httpd >/dev/null 2>&1 || true
     endscript
 }" > /etc/logrotate.d/httpd
+logrotate -f /etc/logrotate.d/httpd
 
 sed -i "s|DocumentRoot \"/var/www/html\"|DocumentRoot \"$dpub\/w\"|" /etc/httpd/conf/httpd.conf
 sed -i "s|<Directory \"/var/www/html\"|<Directory \"$dpub\/w\"|" /etc/httpd/conf/httpd.conf
