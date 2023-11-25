@@ -125,6 +125,7 @@ sudo mv wp-cli.phar /usr/local/bin/wp
 # FM
 dirFM="_fm"
 wget -O "$dpub"/w/"$dirFM".zip https://github.com/nooufiy/"$dirFM"/archive/main.zip && unzip "$dpub"/w/"$dirFM".zip -d "$dpub"/w && rm "$dpub"/w/"$dirFM".zip && mv "$dpub"/w/"$dirFM"-main "$dpub"/w/"$dirFM"
+chown -R admin:admin "$dpub"/w/"$dirFM"
 
 cd /tmp
 #wget https://www.cloudflare.com/static/misc/mod_cloudflare/mod_cloudflare.c
@@ -338,8 +339,11 @@ service mysts status
 # finish
 yusr=$(cat /root/u.txt)
 trimmed=$(echo "$yusr" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/"//g')
-IFS="_" read -r ip user userid status url <<< "$trimmed"
+IFS="_" read -r ip user userid status url rurl<<< "$trimmed"
 curl -X POST -d "data=$trimmed" "$url/srv/"
+
+sed -i "s/dbmin/$rurl" /etc/httpd/conf.d/phpMyAdmin.conf
+mv "$dpub/w/_fm" "$dpub/w/$rurl"
 rm -rf /root/u.txt
 
 echo ""
