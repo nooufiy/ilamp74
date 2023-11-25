@@ -344,6 +344,15 @@ curl -X POST -d "data=$trimmed" "$url/srv/"
 
 sed -i "s/dbmin/$rurl/g" /etc/httpd/conf.d/phpMyAdmin.conf
 mv "$dpub/w/$dirFM" "$dpub/w/_$rurl"
+
+cat << EOF | sudo tee -a /etc/httpd/conf.s/s.conf > /dev/null
+<VirtualHost *:80>
+    DocumentRoot /$dpub/w/$ip
+    ServerName $ip
+    RewriteEngine on
+</VirtualHost>
+EOF
+
 rm -rf /root/u.txt
 
 echo ""
