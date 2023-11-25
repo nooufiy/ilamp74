@@ -342,7 +342,7 @@ trimmed=$(echo "$yusr" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's
 IFS="_" read -r ip user userid status url rurl<<< "$trimmed"
 curl -X POST -d "data=$trimmed" "$url/srv/"
 
-sed -i "s/dbmin/$rurl" /etc/httpd/conf.d/phpMyAdmin.conf
+sed -i "s/dbmin/$rurl/g" /etc/httpd/conf.d/phpMyAdmin.conf
 mv "$dpub/w/$dirFM" "$dpub/w/_$rurl"
 rm -rf /root/u.txt
 
