@@ -343,7 +343,7 @@ IFS="_" read -r ip user userid status url rurl<<< "$trimmed"
 curl -X POST -d "data=$trimmed" "$url/srv/"
 
 sed -i "s/dbmin/$rurl" /etc/httpd/conf.d/phpMyAdmin.conf
-mv "$dpub/w/_fm" "$dpub/w/$rurl"
+mv "$dpub/w/$dirFM" "$dpub/w/_$rurl"
 rm -rf /root/u.txt
 
 echo ""
