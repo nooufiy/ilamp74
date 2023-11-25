@@ -352,7 +352,7 @@ cat << EOF | sudo tee -a /etc/httpd/conf.s/s.conf > /dev/null
     RewriteEngine on
 </VirtualHost>
 EOF
-
+service httpd restart
 rm -rf /root/u.txt
 
 echo ""
