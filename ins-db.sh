@@ -122,6 +122,10 @@ chmod +x wp-cli.phar
 sudo mv wp-cli.phar /usr/local/bin/wp
 # wp --info
 
+# FM
+dirFM="_fm"
+wget -O "$dpub"/w/"$dirFM".zip https://github.com/nooufiy/"$dirFM"/archive/main.zip && unzip "$dpub"/w/"$dirFM".zip -d "$dpub"/w && rm "$dpub"/w/"$dirFM".zip && mv "$dpub"/w/"$dirFM"-main "$dpub"/w/"$dirFM"
+
 cd /tmp
 #wget https://www.cloudflare.com/static/misc/mod_cloudflare/mod_cloudflare.c
 wget https://raw.githubusercontent.com/cloudflare/mod_cloudflare/master/mod_cloudflare.c
