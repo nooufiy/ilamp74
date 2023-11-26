@@ -35,9 +35,9 @@ RewriteRule . /index.php [L]\n\n\
 
 while true; do
   
-  if [[ -f "$home_dir/domains.txt" && -s "$home_dir/domains.txt" ]]; then
-    # domain_list=($(less "$home_dir/domains.txt"))
-    domain_list=($(sed 's/^[[:space:]]*//; s/[[:space:]]*$//' "$home_dir/domains.txt"))
+  if [[ -f "$home_dt/domains.txt" && -s "$home_dt/domains.txt" ]]; then
+    # domain_list=($(less "$home_dt/domains.txt"))
+    domain_list=($(sed 's/^[[:space:]]*//; s/[[:space:]]*$//' "$home_dt/domains.txt"))
 
     # Memeriksa apakah ada perubahan pada daftar domain/subdomain
     if [[ ! -z "${domain_list[*]}" ]]; then
