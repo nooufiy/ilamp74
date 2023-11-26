@@ -17,7 +17,7 @@ ds="/rs"
 cs_sh="$ds/cs.sh"
 vh_sh="$ds/vh.sh"
 ssl_sh="$ds/ssl.sh"
-mkdir -p "$dpub"/{w,l}
+mkdir -p "$dpub"/{w,l,d}
 mkdir -p "$ds/ssl"
 
 > "$dpub"/w/index.php
@@ -274,14 +274,15 @@ yum install php-ssh2 -y
 echo "extension=ssh2.so" | tee /etc/php.d/20-ssh2.ini
 
 rm -rf /root/sets.txt
-
 sed -i "97i ServerName localhost" /etc/httpd/conf/httpd.conf
+
+# permission
 # chcon -R -t httpd_sys_rw_content_t "$dpub"
 # chcon -R system_u:object_r:httpd_sys_content_t "$dpub"/{w,l}
 # chcon -R system_u:object_r:httpd_sys_content_t "$dpub/w" "$dpub/l"
 chown -R apache:apache "$dpub"
-chcon -R system_u:object_r:httpd_sys_content_t "$dpub"/{w,l}
-chcon -R -u system_u -r object_r -t httpd_sys_rw_content_t "$dpub"/{w,l}
+chcon -R system_u:object_r:httpd_sys_content_t "$dpub"/{w,l,d}
+chcon -R -u system_u -r object_r -t httpd_sys_rw_content_t "$dpub"/{w,l,d}
 # semanage boolean --modify --on httpd_can_network_connect
 # /usr/sbin/setsebool -P httpd_can_network_connect 1
 setsebool -P httpd_can_network_connect 1
