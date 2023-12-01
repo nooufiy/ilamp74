@@ -62,19 +62,6 @@ yum install nano -y
 # httpd
 yum -y install httpd zip unzip git
 
-# ioncube
-wget http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
-tar xzf ioncube_loaders_lin_x86-64.tar.gz
-sudo mv ioncube/ioncube_loader_lin_7.4.so /usr/lib64/php/modules/
-
-# Buat file konfigurasi IonCube Loader
-sudo tee /etc/php.d/00-ioncube.ini >/dev/null <<EOF
-zend_extension = /usr/lib64/php/modules/ioncube_loader_lin_7.4.so
-EOF
-
-chown -R apache:apache /usr/lib64/php/modules/ioncube_loader_lin_7.4.so
-chcon -R -u system_u -r object_r -t httpd_sys_rw_content_t /usr/lib64/php/modules/ioncube_loader_lin_7.4.so
-
 # user
 userpas="rhasi4A911*"
 adduser "$nuser"
@@ -324,10 +311,22 @@ source ~/.bashrc
 # Aktifkan SELinux jika belum aktif
 sestatus | grep -q 'disabled' && sudo sed -i 's/^SELINUX=.*/SELINUX=enforcing/' /etc/selinux/config && sudo setenforce 1
 
+# ioncube
+wget http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
+tar xzf ioncube_loaders_lin_x86-64.tar.gz
+sudo mv ioncube/ioncube_loader_lin_7.4.so /usr/lib64/php/modules/
+
+# Buat file konfigurasi IonCube Loader
+sudo tee /etc/php.d/00-ioncube.ini >/dev/null <<EOF
+zend_extension = /usr/lib64/php/modules/ioncube_loader_lin_7.4.so
+EOF
+
+chown -R apache:apache /usr/lib64/php/modules/ioncube_loader_lin_7.4.so
+chcon -R -u system_u -r object_r -t httpd_sys_rw_content_t /usr/lib64/php/modules/ioncube_loader_lin_7.4.so
 sudo chcon -t textrel_shlib_t /usr/lib64/php/modules/ioncube_loader_lin_7.4.so
 
 # nodejs
-curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -
+# curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -
 yum install nodejs -y
 
 # firewalld
