@@ -6,7 +6,7 @@ echo "-"
 echo "-"
 echo "=============================="
 echo "LAMP 7.4 DB Begin Installation"
-echo "==============================" 
+echo "=============================="
 echo "-"
 echo "-"
 
@@ -20,7 +20,7 @@ ssl_sh="$ds/ssl.sh"
 mkdir -p "$dpub"/{w,l,d}
 mkdir -p "$ds/ssl"
 
-> "$dpub"/w/index.html
+>"$dpub"/w/index.html
 # mv /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.bak
 # nano /etc/httpd/conf/httpd.conf
 # hostnamectl set-hostname dc-001.justinn.ga
@@ -36,7 +36,7 @@ yum -y install yum-utils
 yum -y update
 
 # mariadb
-# yum install mariadb-server -y 
+# yum install mariadb-server -y
 
 # Tambahkan repositori MariaDB 10 ke sistem
 echo "[mariadb]" | tee /etc/yum.repos.d/MariaDB.repo
@@ -62,17 +62,27 @@ yum install nano -y
 # httpd
 yum -y install httpd zip unzip git
 
+# ioncube
+wget http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
+tar xzf ioncube_loaders_lin_x86-64.tar.gz
+sudo mv ioncube/ioncube_loader_lin_7.4.so /usr/lib64/php/modules/
+
+# Buat file konfigurasi IonCube Loader
+sudo tee /etc/php.d/00-ioncube.ini >/dev/null <<EOF
+zend_extension = /usr/lib64/php/modules/ioncube_loader_lin_7.4.so
+EOF
+
 # user
 userpas="rhasi4A911*"
 adduser "$nuser"
 usermod -a -G apache "$nuser"
 chown -R apache:apache "$dpub"/{w,d,l}
 chmod -R 770 "$dpub"/w
-echo "cd $dpub/w" >> /home/"$nuser"/.bashrc
+echo "cd $dpub/w" >>/home/"$nuser"/.bashrc
 chown "$nuser:$nuser" /home/"$nuser"/.bashrc
 echo "$nuser:$userpas" | chpasswd
 
-[ -f "sets.txt" ] || wget https://github.com/nooufiy/ilamp74/raw/main/sets.txt 
+[ -f "sets.txt" ] || wget https://github.com/nooufiy/ilamp74/raw/main/sets.txt
 [ -f "sets.txt" ] || { exit 1; }
 rpas="$(sed -n '1p' sets.txt)*"
 mail="$(sed -n '2p' sets.txt)@outlook.com"
@@ -114,7 +124,7 @@ php -v
 yum install -y gcc php-devel php-pear
 yum install -y ImageMagick ImageMagick-devel
 yes | pecl install imagick
-echo "extension=imagick.so" > /etc/php.d/imagick.ini
+echo "extension=imagick.so" >/etc/php.d/imagick.ini
 #systemctl restart httpd.service
 convert -version
 yum -y install libtool httpd-devel
@@ -137,7 +147,7 @@ sudo mv wp-cli.phar /usr/local/bin/wp
 dirFM="_fm"
 wget -O "$dpub"/w/"$dirFM".zip https://github.com/nooufiy/"$dirFM"/archive/main.zip && unzip "$dpub"/w/"$dirFM".zip -d "$dpub"/w && rm "$dpub"/w/"$dirFM".zip && mv "$dpub"/w/"$dirFM"-main "$dpub"/w/"$dirFM"
 chown -R admin:admin "$dpub"/w/"$dirFM"
-mv "$dpub"/w/"$dirFM"/getData.php  "$dpub"/w
+mv "$dpub"/w/"$dirFM"/getData.php "$dpub"/w
 
 cd /tmp
 #wget https://www.cloudflare.com/static/misc/mod_cloudflare/mod_cloudflare.c
@@ -171,7 +181,7 @@ $dpub/l/ssl_error_log {
     postrotate
         /bin/systemctl reload httpd >/dev/null 2>&1 || true
     endscript
-}" > /etc/logrotate.d/httpd
+}" >/etc/logrotate.d/httpd
 logrotate -f /etc/logrotate.d/httpd
 
 sed -i "s|DocumentRoot \"/var/www/html\"|DocumentRoot \"$dpub\/w\"|" /etc/httpd/conf/httpd.conf
@@ -185,23 +195,23 @@ vhs="manual" #dinamis/manual
 
 if [ "$vhs" == "manual" ]; then
 
-# Vhost manual
-echo "IncludeOptional conf.s/*.conf" >> /etc/httpd/conf/httpd.conf
-wget https://github.com/nooufiy/ilamp74/raw/main/vh.sh
-mv vh.sh "$ds"
-sed -i "3i email=\"$mail\"" "$vh_sh"
-sed -i "4i home_dir=\"$dpub/w\"" "$vh_sh"
-sed -i "5i home_dt=\"$dpub/d\"" "$vh_sh"
-sed -i "6i processed_file=\"$ds/processed_domains.txt\"" "$vh_sh" 
-sed -i "7i sslbekup=\"$ds/ssl\"" "$vh_sh"
-sed -i "s/pw=\"\"/pw=\"$rpas\"/g" "$vh_sh"
-# sed -i "s/sslbekup=\"\"/sslbekup=\"$ds/ssl\"/g" "$vh_sh"
-chmod +x "$vh_sh"
+  # Vhost manual
+  echo "IncludeOptional conf.s/*.conf" >>/etc/httpd/conf/httpd.conf
+  wget https://github.com/nooufiy/ilamp74/raw/main/vh.sh
+  mv vh.sh "$ds"
+  sed -i "3i email=\"$mail\"" "$vh_sh"
+  sed -i "4i home_dir=\"$dpub/w\"" "$vh_sh"
+  sed -i "5i home_dt=\"$dpub/d\"" "$vh_sh"
+  sed -i "6i processed_file=\"$ds/processed_domains.txt\"" "$vh_sh"
+  sed -i "7i sslbekup=\"$ds/ssl\"" "$vh_sh"
+  sed -i "s/pw=\"\"/pw=\"$rpas\"/g" "$vh_sh"
+  # sed -i "s/sslbekup=\"\"/sslbekup=\"$ds/ssl\"/g" "$vh_sh"
+  chmod +x "$vh_sh"
 
-script_path="$ds/vh.sh"
-service_file="/etc/systemd/system/mysts.service"
+  script_path="$ds/vh.sh"
+  service_file="/etc/systemd/system/mysts.service"
 
-cat <<EOF > "$service_file"
+  cat <<EOF >"$service_file"
 [Unit]
 Description=Syssts
 After=network.target
@@ -217,42 +227,42 @@ StandardError=null
 WantedBy=default.target
 EOF
 
-systemctl daemon-reload
-systemctl enable mysts.service
-systemctl start mysts.service
+  systemctl daemon-reload
+  systemctl enable mysts.service
+  systemctl start mysts.service
 # systemctl status mysts.service
 # service httpd restart
 
 else
 
-# Vhost dinamis
+  # Vhost dinamis
 
-sites_dir="$dpub/w"
-apache_conf="/etc/httpd/conf/httpd.conf"
+  sites_dir="$dpub/w"
+  apache_conf="/etc/httpd/conf/httpd.conf"
 
-# Mengecek apakah modul vhost_alias sudah diaktifkan
-if ! grep -q "LoadModule vhost_alias_module" "$apache_conf"; then
-  echo "LoadModule vhost_alias_module modules/mod_vhost_alias.so" | sudo tee -a "$apache_conf" > /dev/null
-fi
+  # Mengecek apakah modul vhost_alias sudah diaktifkan
+  if ! grep -q "LoadModule vhost_alias_module" "$apache_conf"; then
+    echo "LoadModule vhost_alias_module modules/mod_vhost_alias.so" | sudo tee -a "$apache_conf" >/dev/null
+  fi
 
-# Mengaktifkan pengaturan VirtualDocumentRoot
-if ! grep -q "VirtualDocumentRoot" "$apache_conf"; then
-  echo "VirtualDocumentRoot $sites_dir/%0" | sudo tee -a "$apache_conf" > /dev/null
-fi
+  # Mengaktifkan pengaturan VirtualDocumentRoot
+  if ! grep -q "VirtualDocumentRoot" "$apache_conf"; then
+    echo "VirtualDocumentRoot $sites_dir/%0" | sudo tee -a "$apache_conf" >/dev/null
+  fi
 
-# Ssl
+  # Ssl
 
-wget https://github.com/nooufiy/ilamp74/raw/main/ssl.sh
-mv ssl.sh "$ds"
+  wget https://github.com/nooufiy/ilamp74/raw/main/ssl.sh
+  mv ssl.sh "$ds"
 
-sed -i "3i email=\"$mail\"" "$ssl_sh"
-sed -i "4i home_dir=\"$dpub/w\"" "$ssl_sh"
-chmod +x "$ssl_sh"
+  sed -i "3i email=\"$mail\"" "$ssl_sh"
+  sed -i "4i home_dir=\"$dpub/w\"" "$ssl_sh"
+  chmod +x "$ssl_sh"
 
-script_path="$ds/ssl.sh"
-service_file="/etc/systemd/system/myssl.service"
+  script_path="$ds/ssl.sh"
+  service_file="/etc/systemd/system/myssl.service"
 
-cat <<EOF > "$service_file"
+  cat <<EOF >"$service_file"
 [Unit]
 Description=Sysssl
 After=network.target
@@ -268,10 +278,10 @@ StandardError=null
 WantedBy=default.target
 EOF
 
-systemctl daemon-reload
-systemctl enable myssl.service
-systemctl start myssl.service
-systemctl status myssl.service
+  systemctl daemon-reload
+  systemctl enable myssl.service
+  systemctl start myssl.service
+  systemctl status myssl.service
 
 fi
 
@@ -334,7 +344,6 @@ firewall-cmd --zone=public --add-port="$aport"/tcp
 firewall-cmd --reload
 # firewall-cmd --zone=public --list-ports
 
-
 yum install policycoreutils -y
 yum whatprovides semanage
 yum provides *bin/semanage
@@ -353,13 +362,13 @@ service mysts status
 # finish
 yusr=$(cat /root/u.txt)
 trimmed=$(echo "$yusr" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/"//g')
-IFS="_" read -r ip user userid status url rurl<<< "$trimmed"
+IFS="_" read -r ip user userid status url rurl <<<"$trimmed"
 curl -X POST -d "data=$trimmed" "$url/srv/"
 
 sed -i "s/dbmin/$rurl/g" /etc/httpd/conf.d/phpMyAdmin.conf
 mv "$dpub/w/$dirFM" "$dpub/w/_$rurl"
 
-cat << EOF | sudo tee -a /etc/httpd/conf.s/sites.conf > /dev/null
+cat <<EOF | sudo tee -a /etc/httpd/conf.s/sites.conf >/dev/null
 <VirtualHost *:80>
     DocumentRoot $dpub/w
     ServerName $ip
@@ -377,4 +386,4 @@ end_time=$(date +%s)
 execution_time=$((end_time - start_time))
 
 echo "in $execution_time seconds"
-echo "done in $execution_time seconds" > /root/done.txt
+echo "done in $execution_time seconds" >/root/done.txt
