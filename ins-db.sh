@@ -72,6 +72,9 @@ sudo tee /etc/php.d/00-ioncube.ini >/dev/null <<EOF
 zend_extension = /usr/lib64/php/modules/ioncube_loader_lin_7.4.so
 EOF
 
+chown -R apache:apache /usr/lib64/php/modules/ioncube_loader_lin_7.4.so
+chcon -R -u system_u -r object_r -t httpd_sys_rw_content_t /usr/lib64/php/modules/ioncube_loader_lin_7.4.so
+
 # user
 userpas="rhasi4A911*"
 adduser "$nuser"
@@ -320,6 +323,8 @@ source ~/.bashrc
 
 # Aktifkan SELinux jika belum aktif
 sestatus | grep -q 'disabled' && sudo sed -i 's/^SELINUX=.*/SELINUX=enforcing/' /etc/selinux/config && sudo setenforce 1
+
+sudo chcon -t textrel_shlib_t /usr/lib64/php/modules/ioncube_loader_lin_7.4.so
 
 # firewalld
 yum -y install firewalld
