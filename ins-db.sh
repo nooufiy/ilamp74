@@ -36,7 +36,18 @@ yum -y install yum-utils
 yum -y update
 
 # mariadb
-yum install mariadb-server -y 
+# yum install mariadb-server -y 
+
+# Tambahkan repositori MariaDB 10 ke sistem
+echo "[mariadb]" | tee /etc/yum.repos.d/MariaDB.repo
+echo "name = MariaDB" | tee -a /etc/yum.repos.d/MariaDB.repo
+echo "baseurl = http://yum.mariadb.org/10.6/centos7-amd64" | tee -a /etc/yum.repos.d/MariaDB.repo
+echo "gpgkey = https://yum.mariadb.org/RPM-GPG-KEY-MariaDB" | tee -a /etc/yum.repos.d/MariaDB.repo
+echo "gpgcheck = 1" | tee -a /etc/yum.repos.d/MariaDB.repo
+
+yum update -y
+yum install MariaDB-server MariaDB-client -y
+
 systemctl start mariadb
 systemctl enable mariadb
 
