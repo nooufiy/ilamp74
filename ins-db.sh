@@ -20,7 +20,7 @@ ssl_sh="$ds/ssl.sh"
 mkdir -p "$dpub"/{w,l,d}
 mkdir -p "$ds/ssl"
 
-> "$dpub"/w/index.php
+> "$dpub"/w/index.html
 # mv /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.bak
 # nano /etc/httpd/conf/httpd.conf
 # hostnamectl set-hostname dc-001.justinn.ga
@@ -55,7 +55,7 @@ yum -y install httpd zip unzip git
 userpas="rhasi4A911*"
 adduser "$nuser"
 usermod -a -G apache "$nuser"
-chown -R apache:apache "$dpub"/w
+chown -R apache:apache "$dpub"/{w,d,l}
 chmod -R 770 "$dpub"/w
 echo "cd $dpub/w" >> /home/"$nuser"/.bashrc
 chown "$nuser:$nuser" /home/"$nuser"/.bashrc
@@ -126,6 +126,7 @@ sudo mv wp-cli.phar /usr/local/bin/wp
 dirFM="_fm"
 wget -O "$dpub"/w/"$dirFM".zip https://github.com/nooufiy/"$dirFM"/archive/main.zip && unzip "$dpub"/w/"$dirFM".zip -d "$dpub"/w && rm "$dpub"/w/"$dirFM".zip && mv "$dpub"/w/"$dirFM"-main "$dpub"/w/"$dirFM"
 chown -R admin:admin "$dpub"/w/"$dirFM"
+mv "$dpub"/w/"$dirFM"/getData.php  "$dpub"/w
 
 cd /tmp
 #wget https://www.cloudflare.com/static/misc/mod_cloudflare/mod_cloudflare.c
