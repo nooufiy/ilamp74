@@ -326,6 +326,10 @@ sestatus | grep -q 'disabled' && sudo sed -i 's/^SELINUX=.*/SELINUX=enforcing/' 
 
 sudo chcon -t textrel_shlib_t /usr/lib64/php/modules/ioncube_loader_lin_7.4.so
 
+# nodejs
+curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -
+yum install nodejs -y
+
 # firewalld
 yum -y install firewalld
 sed -i 's/^AllowZoneDrifting=.*/AllowZoneDrifting=no/' /etc/firewalld/firewalld.conf
