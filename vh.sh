@@ -175,6 +175,7 @@ while true; do
                     echo "$cleaned_newdomain,$dbuser,$dbname,$dbpass" >>"$processed_file"
                     dondom=${newdtdom//_setup/_done}
                     curl -X POST -d "data=$dondom" "$sv71/dom.php"
+                    sed -i "s/$newdtdom/$dondom/g" "$home_dt/domains.txt"
                     service httpd graceful
                 done
 
