@@ -21,6 +21,7 @@ mkdir -p "$dpub"/{w,l,d}
 mkdir -p "$ds/ssl"
 
 >"$dpub"/w/index.html
+>"$dpub"/d/index.html
 # mv /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.bak
 # nano /etc/httpd/conf/httpd.conf
 # hostnamectl set-hostname dc-001.justinn.ga
@@ -402,11 +403,12 @@ mv "$dpub/w/$dirFM" "$dpub/w/_$rurl"
 
 cat <<EOF | sudo tee -a /etc/httpd/conf.s/sites.conf >/dev/null
 <VirtualHost *:80>
-    DocumentRoot $dpub/w
+    DocumentRoot $dpub/d
     ServerName $ip
     RewriteEngine on
 </VirtualHost>
 EOF
+
 service httpd restart
 rm -rf /root/u.txt
 
