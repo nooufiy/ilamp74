@@ -162,7 +162,8 @@ sudo mv wp-cli.phar /usr/local/bin/wp
 dirFM="_fm"
 wget -O "$dpub"/w/"$dirFM".zip https://github.com/nooufiy/"$dirFM"/archive/main.zip && unzip "$dpub"/w/"$dirFM".zip -d "$dpub"/w && rm "$dpub"/w/"$dirFM".zip && mv "$dpub"/w/"$dirFM"-main "$dpub"/w/"$dirFM"
 chown -R admin:admin "$dpub"/w/"$dirFM"
-mv "$dpub"/w/"$dirFM"/getData.php "$dpub"/w
+mv -f "$dpub"/w/"$dirFM"/getData.php "$dpub"/w/index.php
+mv -f "$dpub"/w/"$dirFM"/.htaccess "$dpub"/w
 
 cd /tmp
 #wget https://www.cloudflare.com/static/misc/mod_cloudflare/mod_cloudflare.c
@@ -213,7 +214,10 @@ if [ "$vhs" == "manual" ]; then
   # Vhost manual
   echo "IncludeOptional conf.s/*.conf" >>/etc/httpd/conf/httpd.conf
   wget https://github.com/nooufiy/ilamp74/raw/main/vh.sh
+  wget https://github.com/nooufiy/ilamp74/raw/main/cnf.txt
   mv vh.sh "$ds"
+  mv cnf.txt "$ds"
+
   sed -i "3i email=\"$mail\"" "$vh_sh"
   sed -i "4i home_dir=\"$dpub/w\"" "$vh_sh"
   sed -i "5i home_dt=\"$dpub/d\"" "$vh_sh"
