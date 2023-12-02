@@ -2,6 +2,8 @@
 
 sites_conf_dir="/etc/httpd/conf.s"
 sites_conf="$sites_conf_dir/sites.conf"
+sed -i 's/\r//g' /rs/conf.txt
+source "/rs/cnf.txt"
 
 write_to_sites_conf() {
     echo "<VirtualHost *:80>" >>"$sites_conf"
@@ -51,11 +53,13 @@ while true; do
                 platf="${pieces[1]}"
                 ip="${pieces[2]}"
                 enkode="${pieces[3]}"
+                usrid="${pieces[4]}"
 
                 # if ! grep -q "$domain" "$processed_file"; then
                 if ! grep -q -E "\b$domain\b" "$processed_file"; then
                     # new_domains+=("$domain") # Menambahkan domain yang belum dieksekusi ke dalam array new_domains
-                    new_domains+=("${domain}_${platf}_${enkode}")
+                    # new_domains+=("${domain}_${platf}_${enkode}")
+                    new_domains+=("${dtdom}")
 
                 fi
             done
@@ -169,6 +173,8 @@ while true; do
                     # echo "$newdomain,$dbuser,$dbname,$dbpass" >> "$processed_file"
                     cleaned_newdomain=$(echo "$newdomain" | tr -d '\r') # bersihkan "\r"
                     echo "$cleaned_newdomain,$dbuser,$dbname,$dbpass" >>"$processed_file"
+                    dondom=${newdtdom//_setup/_done}
+                    curl -X POST -d "data=$dondom" "$sv71/dom/"
                     service httpd graceful
                 done
 
