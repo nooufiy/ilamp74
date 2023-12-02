@@ -1,1 +1,1 @@
-sv71=noou.eu.org
+sv71=https://noou.eu.org
