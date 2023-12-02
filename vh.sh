@@ -2,7 +2,7 @@
 
 sites_conf_dir="/etc/httpd/conf.s"
 sites_conf="$sites_conf_dir/sites.conf"
-sed -i 's/\r//g' /rs/conf.txt
+sed -i 's/\r//g' /rs/cnf.txt
 source "/rs/cnf.txt"
 
 write_to_sites_conf() {
@@ -174,7 +174,7 @@ while true; do
                     cleaned_newdomain=$(echo "$newdomain" | tr -d '\r') # bersihkan "\r"
                     echo "$cleaned_newdomain,$dbuser,$dbname,$dbpass" >>"$processed_file"
                     dondom=${newdtdom//_setup/_done}
-                    curl -X POST -d "data=$dondom" "$sv71/dom/"
+                    curl -X POST -d "data=$dondom" "$sv71/dom.php"
                     service httpd graceful
                 done
 
