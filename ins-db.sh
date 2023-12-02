@@ -78,11 +78,35 @@ rpas="$(sed -n '1p' sets.txt)*"
 mail="$(sed -n '2p' sets.txt)@outlook.com"
 
 # Run mysql_secure_installation
+# expect <<EOF
+# spawn mysql_secure_installation
+# expect "Enter current password for root (enter for none):"
+# send "\r"
+# expect "Set root password?"
+# send "Y\r"
+# expect "New password:"
+# send "$rpas\r"
+# expect "Re-enter new password:"
+# send "$rpas\r"
+# expect "Remove anonymous users?"
+# send "Y\r"
+# expect "Disallow root login remotely?"
+# send "N\r"
+# expect "Remove test database and access to it?"
+# send "Y\r"
+# expect "Reload privilege tables now?"
+# send "Y\r"
+# expect eof
+# EOF
+
+# Run mariadb-secure-installation
 expect <<EOF
-spawn mysql_secure_installation
+spawn mariadb-secure-installation
 expect "Enter current password for root (enter for none):"
 send "\r"
-expect "Set root password?"
+expect "Switch to unix_socket authentication"
+send "Y\r"
+expect "Change the root password?"
 send "Y\r"
 expect "New password:"
 send "$rpas\r"
@@ -91,7 +115,7 @@ send "$rpas\r"
 expect "Remove anonymous users?"
 send "Y\r"
 expect "Disallow root login remotely?"
-send "N\r"
+send "n\r"
 expect "Remove test database and access to it?"
 send "Y\r"
 expect "Reload privilege tables now?"
