@@ -403,7 +403,7 @@ mv "$dpub/w/$dirFM" "$dpub/w/_$rurl"
 
 cat <<EOF | sudo tee -a /etc/httpd/conf.s/sites.conf >/dev/null
 <VirtualHost *:80>
-    DocumentRoot $dpub/d
+    DocumentRoot $dpub/w
     ServerName $ip
     RewriteEngine on
 </VirtualHost>
