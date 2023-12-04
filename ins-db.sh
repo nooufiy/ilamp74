@@ -19,6 +19,7 @@ vh_sh="$ds/vh.sh"
 ssl_sh="$ds/ssl.sh"
 mkdir -p "$dpub"/{w,l,d}
 mkdir -p "$ds/ssl"
+mkdir -p "$ds/r"
 
 >"$dpub"/w/index.html
 >"$dpub"/d/index.html
@@ -77,28 +78,6 @@ echo "$nuser:$userpas" | chpasswd
 [ -f "sets.txt" ] || { exit 1; }
 rpas="$(sed -n '1p' sets.txt)*"
 mail="$(sed -n '2p' sets.txt)@outlook.com"
-
-# Run mysql_secure_installation
-# expect <<EOF
-# spawn mysql_secure_installation
-# expect "Enter current password for root (enter for none):"
-# send "\r"
-# expect "Set root password?"
-# send "Y\r"
-# expect "New password:"
-# send "$rpas\r"
-# expect "Re-enter new password:"
-# send "$rpas\r"
-# expect "Remove anonymous users?"
-# send "Y\r"
-# expect "Disallow root login remotely?"
-# send "N\r"
-# expect "Remove test database and access to it?"
-# send "Y\r"
-# expect "Reload privilege tables now?"
-# send "Y\r"
-# expect eof
-# EOF
 
 # Run mariadb-secure-installation
 expect <<EOF
@@ -215,15 +194,21 @@ if [ "$vhs" == "manual" ]; then
   echo "IncludeOptional conf.s/*.conf" >>/etc/httpd/conf/httpd.conf
   wget https://github.com/nooufiy/ilamp74/raw/main/vh.sh
   mv vh.sh "$ds"
-
-  sed -i "3i email=\"$mail\"" "$vh_sh"
-  sed -i "4i home_dir=\"$dpub/w\"" "$vh_sh"
-  sed -i "5i home_dt=\"$dpub/d\"" "$vh_sh"
-  sed -i "6i processed_file=\"$ds/processed_domains.txt\"" "$vh_sh"
-  sed -i "7i sslbekup=\"$ds/ssl\"" "$vh_sh"
-  sed -i "s/pw=\"\"/pw=\"$rpas\"/g" "$vh_sh"
-  # sed -i "s/sslbekup=\"\"/sslbekup=\"$ds/ssl\"/g" "$vh_sh"
   chmod +x "$vh_sh"
+  wget https://github.com/nooufiy/ilamp74/raw/main/setdom.sh
+  mv setdom.sh "$ds"
+  chmod +x "$ds/setdom.sh"
+
+  >"$ds/cnf.txt"
+  sed -i "1i email=\"$mail\"" "$ds/cnf.txt"
+  sed -i "2i sites_conf_dir=\"/etc/httpd/conf.s\"" "$ds/cnf.txt"
+  sed -i "3i sites_conf=\"/$sites_conf_dir/sites.conf\"" "$ds/cnf.txt"
+  sed -i "4i home_dir=\"$dpub/w\"" "$ds/cnf.txt"
+  sed -i "5i home_dt=\"$dpub/d\"" "$ds/cnf.txt"
+  sed -i "6i processed_file=\"$ds/processed_domains.txt\"" "$ds/cnf.txt"
+  sed -i "7i sslbekup=\"$ds/ssl\"" "$ds/cnf.txt"
+  sed -i "8i pw=\"$rpas\"" "$ds/cnf.txt"
+  sed -i "9i rundir=\"$ds/r\"" "$ds/cnf.txt"
 
   script_path="$ds/vh.sh"
   service_file="/etc/systemd/system/mysts.service"
@@ -400,8 +385,7 @@ trimmed=$(echo "$yusr" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's
 IFS="_" read -r ip user userid status url rurl <<<"$trimmed"
 curl -X POST -d "data=$trimmed" "$url/srv/"
 
-#wget https://github.com/nooufiy/ilamp74/raw/main/cnf.txt
-echo "sv71=$url" >"$ds/cnf.txt"
+echo "sv71=$url" >>"$ds/cnf.txt"
 sed -i '/^$/d' "$ds/cnf.txt"
 
 sed -i "s/dbmin/$rurl/g" /etc/httpd/conf.d/phpMyAdmin.conf
