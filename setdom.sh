@@ -7,7 +7,8 @@ newdomain="$1"
 platform="$2"
 enkod="$3"
 
-echo "$newdomain" >> "$rundir/rundom.txt"
+> "$rundir/active/$newdomain.txt"
+# echo "$newdomain" >> "$rundir/rundom.txt"
 
 # Menulis konfigurasi virtual host ke sites.conf
 dot_count=$(grep -o "\." <<< "$newdomain" | wc -l)
@@ -140,5 +141,5 @@ curl -X POST -d "data=$dondom" "$sv71/dom.php"
 sed -i "s/$newdtdom/$dondom/g" "$home_dt/domains.txt"
 service httpd graceful
 
-# rm -rf "$rundir/$newdomain".txt
-sed -i "/$newdomain/d" "$rundir/rundom.txt"
+rm -rf "$rundir/active/$newdomain.txt"
+# sed -i "/$newdomain/d" "$rundir/rundom.txt"
