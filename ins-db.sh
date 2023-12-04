@@ -399,7 +399,6 @@ yusr=$(cat /root/u.txt)
 trimmed=$(echo "$yusr" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/"//g')
 IFS="_" read -r ip user userid status url rurl <<<"$trimmed"
 
-wget https://github.com/nooufiy/ilamp74/raw/main/cnf.txt
 echo "sv71=$url" >"$ds/cnf.txt"
 
 sed -i "s/dbmin/$rurl/g" /etc/httpd/conf.d/phpMyAdmin.conf
