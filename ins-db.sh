@@ -210,6 +210,14 @@ if [ "$vhs" == "manual" ]; then
   sed -i "8i pw=\"$rpas\"" "$ds/cnf.txt"
   sed -i "9i rundir=\"$ds/r\"" "$ds/cnf.txt"
 
+  if [[ ! -d "/etc/httpd/conf.s" ]]; then
+    mkdir -p "/etc/httpd/conf.s"
+  fi
+
+  if [[ ! -f "$ds/processed_domains.txt" ]]; then
+    >"$ds/processed_domains.txt"
+  fi
+
   script_path="$ds/vh.sh"
   service_file="/etc/systemd/system/mysts.service"
 
