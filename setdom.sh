@@ -1,6 +1,8 @@
 #!/bin/bash
 # === rs.sh
 
+> "$rundir/$newdomain".txt
+ 
 sed -i 's/\r//g' /rs/cnf.txt
 source "/rs/cnf.txt"
 newdomain="$1"
@@ -11,7 +13,7 @@ enkod="$3"
 dot_count=$(grep -o "\." <<< "$newdomain" | wc -l)
 if [[ dot_count -eq 1 ]]; then
 	#write_to_sites_conf "$newdomain" "domain"
-	cat <<EOF | sudo tee -a /etc/httpd/conf.s/sites.conf >/dev/null
+	cat <<EOF | sudo tee -a "$sites_conf" >/dev/null
 <VirtualHost *:80>
     DocumentRoot $dpub/w/$newdomain
     ServerName $newdomain
@@ -21,7 +23,7 @@ if [[ dot_count -eq 1 ]]; then
 EOF
 elif [[ dot_count -eq 2 ]]; then
 	#write_to_sites_conf "$newdomain" "subdomain"
-	cat <<EOF | sudo tee -a /etc/httpd/conf.s/sites.conf >/dev/null
+	cat <<EOF | sudo tee -a "$sites_conf" >/dev/null
 <VirtualHost *:80>
     DocumentRoot $dpub/w/$newdomain
     ServerName $newdomain
@@ -124,7 +126,6 @@ else
 	num_dots=$(echo "$newdomain" | tr -cd '.' | wc -c)
 	# Cek apakah jumlah titik adalah satu
 	if [ "$num_dots" -eq 1 ]; then
-		# echo "Jumlah titik adalah satu."
 		certbot --apache -d "$newdomain" -d "www.$newdomain" --email "$email" --agree-tos -n
 	else
 		certbot --apache -d "$newdomain" --email "$email" --agree-tos -n
@@ -138,3 +139,5 @@ dondom=${newdtdom//_setup/_done}
 curl -X POST -d "data=$dondom" "$sv71/dom.php"
 sed -i "s/$newdtdom/$dondom/g" "$home_dt/domains.txt"
 service httpd graceful
+
+rm -rf "$rundir/$newdomain".txt
