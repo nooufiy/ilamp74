@@ -48,7 +48,7 @@ while true; do
 
                     # Cek keberadaan file domain1.txt
                     if [ ! -f "$rundir/active/$newdomain.txt" ]; then
-                        screen -dmS "$newdomain" sh setdom.sh "$newdtdom"
+                        screen -dmS "$newdomain" sh /rs/setdom.sh "$newdtdom"
                     fi
                 done
 
