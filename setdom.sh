@@ -3,12 +3,16 @@
 
 sed -i 's/\r//g' /rs/cnf.txt
 source "/rs/cnf.txt"
-newdomain="$1"
-platform="$2"
-enkod="$3"
+newdtdom="$1"
+ndtdom=(${newdtdom//_/ })
+newdomain="${ndtdom[0]}"
+platform="${ndtdom[1]}"
+ip="${ndtdom[2]}"
+enkod="${ndtdom[3]}"
+userid="${ndtdom[4]}"
+status="${ndtdom[5]}"
 
 > "$rundir/active/$newdomain.txt"
-# echo "$newdomain" >> "$rundir/rundom.txt"
 
 # Menulis konfigurasi virtual host ke sites.conf
 dot_count=$(grep -o "\." <<< "$newdomain" | wc -l)
@@ -42,7 +46,6 @@ dbuser="${short}_usr_${rand_chars}"
 dbname="${short}_nam_${rand_chars}"
 dbpass="${short}_pas_${timestamp}"
 
-pw="S3cr3tt9II*"
 
 if ! mysql -u root -p"$pw" -e "SELECT COUNT(*) FROM mysql.user WHERE user = '$dbuser';" | grep -q '1'; then
 	mysql -u root -p"$pw" -e "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$dbpass';"
