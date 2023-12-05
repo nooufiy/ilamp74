@@ -213,15 +213,15 @@ if [ "$vhs" == "manual" ]; then
   # echo "rundir=\"$ds/r\"" >>"$ds/cnf.txt"
 
   cat <<EOF | sudo tee -a "$ds/cnf.txt" >/dev/null
-email=\"$mail\"
-sites_conf_dir=\"/etc/httpd/conf.s\"
-sites_conf=\"/\$sites_conf_dir/sites.conf\"
-home_dir=\"$dpub/w\"
-home_dt=\"$dpub/d\"
-processed_file=\"$ds/processed_domains.txt\"
-sslbekup=\"$ds/ssl\"
-pw=\"$rpas\"
-rundir=\"$ds/r\"
+email=$mail
+sites_conf_dir=/etc/httpd/conf.s
+sites_conf=/$sites_conf_dir/sites.conf
+home_dir=$dpub/w
+home_dt=$dpub/d
+processed_file=$ds/processed_domains.txt
+sslbekup=$ds/ssl
+pw=$rpas
+rundir=$ds/r
 EOF
 
   if [[ ! -d "/etc/httpd/conf.s" ]]; then
