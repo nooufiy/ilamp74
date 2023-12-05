@@ -202,7 +202,7 @@ if [ "$vhs" == "manual" ]; then
   chmod +x "$ds/setdom.sh"
 
   confsdir="/etc/httpd/conf.s"
-  confsfil="/$confsdir/sites.conf"
+  confsfil="$confsdir/sites.conf"
 
   cat <<EOF | sudo tee -a "$ds/cnf.txt" >/dev/null
 email=$mail
