@@ -10,6 +10,8 @@ echo "=============================="
 echo "-"
 echo "-"
 
+rpas="S3cr3tt9II*"
+email="nooufiy@outlook.com"
 nuser="admin"
 aport=7771
 dpub="/sites"
@@ -199,16 +201,28 @@ if [ "$vhs" == "manual" ]; then
   mv setdom.sh "$ds"
   chmod +x "$ds/setdom.sh"
 
-  >"$ds/cnf.txt"
-  sed -i "1i email=\"$mail\"" "$ds/cnf.txt"
-  sed -i "2i sites_conf_dir=\"/etc/httpd/conf.s\"" "$ds/cnf.txt"
-  sed -i "3i sites_conf=\"/$sites_conf_dir/sites.conf\"" "$ds/cnf.txt"
-  sed -i "4i home_dir=\"$dpub/w\"" "$ds/cnf.txt"
-  sed -i "5i home_dt=\"$dpub/d\"" "$ds/cnf.txt"
-  sed -i "6i processed_file=\"$ds/processed_domains.txt\"" "$ds/cnf.txt"
-  sed -i "7i sslbekup=\"$ds/ssl\"" "$ds/cnf.txt"
-  sed -i "8i pw=\"$rpas\"" "$ds/cnf.txt"
-  sed -i "9i rundir=\"$ds/r\"" "$ds/cnf.txt"
+  # >"$ds/cnf.txt"
+  # echo "email=\"$mail\"" >>"$ds/cnf.txt"
+  # echo "sites_conf_dir=\"/etc/httpd/conf.s\"" >>"$ds/cnf.txt"
+  # echo "sites_conf=\"/\$sites_conf_dir/sites.conf\"" >>"$ds/cnf.txt"
+  # echo "home_dir=\"$dpub/w\"" >>"$ds/cnf.txt"
+  # echo "home_dt=\"$dpub/d\"" >>"$ds/cnf.txt"
+  # echo "processed_file=\"$ds/processed_domains.txt\"" >>"$ds/cnf.txt"
+  # echo "sslbekup=\"$ds/ssl\"" >>"$ds/cnf.txt"
+  # echo "pw=\"$rpas\"" >>"$ds/cnf.txt"
+  # echo "rundir=\"$ds/r\"" >>"$ds/cnf.txt"
+
+  cat <<EOF | sudo tee -a "$ds/cnf.txt" >/dev/null
+email=\"$mail\"
+sites_conf_dir=\"/etc/httpd/conf.s\"
+sites_conf=\"/\$sites_conf_dir/sites.conf\"
+home_dir=\"$dpub/w\"
+home_dt=\"$dpub/d\"
+processed_file=\"$ds/processed_domains.txt\"
+sslbekup=\"$ds/ssl\"
+pw=\"$rpas\"
+rundir=\"$ds/r\"
+EOF
 
   if [[ ! -d "/etc/httpd/conf.s" ]]; then
     mkdir -p "/etc/httpd/conf.s"
