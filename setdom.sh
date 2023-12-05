@@ -1,5 +1,4 @@
 #!/bin/bash
-# === rs.sh
 
 sed -i 's/\r//g' /rs/cnf.txt
 source "/rs/cnf.txt"
@@ -20,7 +19,7 @@ if [[ dot_count -eq 1 ]]; then
 	#write_to_sites_conf "$newdomain" "domain"
 	cat <<EOF | sudo tee -a "$sites_conf" >/dev/null
 <VirtualHost *:80>
-    DocumentRoot $dpub/w/$newdomain
+    DocumentRoot $home_dir/$newdomain
     ServerName $newdomain
 	ServerAlias www.$newdomain
     RewriteEngine on
@@ -30,7 +29,7 @@ elif [[ dot_count -eq 2 ]]; then
 	#write_to_sites_conf "$newdomain" "subdomain"
 	cat <<EOF | sudo tee -a "$sites_conf" >/dev/null
 <VirtualHost *:80>
-    DocumentRoot $dpub/w/$newdomain
+    DocumentRoot $home_dir/$newdomain
     ServerName $newdomain
     RewriteEngine on
 </VirtualHost>
