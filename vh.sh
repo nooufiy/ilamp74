@@ -13,8 +13,6 @@ while true; do
         if [[ ! -z "${domain_list[*]}" ]]; then
             new_domains=()
 
-            # Loop untuk setiap domain/subdomain
-            # for domain in "${domain_list[@]}"; do
             for dtdom in "${domain_list[@]}"; do
                 pieces=(${dtdom//_/ })
                 domain="${pieces[0]}"
@@ -23,7 +21,6 @@ while true; do
                 enkode="${pieces[3]}"
                 usrid="${pieces[4]}"
 
-                # if ! grep -q "$domain" "$processed_file"; then
                 if ! grep -q -E "\b$domain\b" "$processed_file"; then
                     # new_domains+=("$domain") # Menambahkan domain yang belum dieksekusi ke dalam array new_domains
                     # new_domains+=("${domain}_${platf}_${enkode}")
@@ -33,20 +30,15 @@ while true; do
             done
 
             if [[ ! -z "${new_domains[*]}" ]]; then
-                # echo "Domain baru yang akan dieksekusi:"
-                # for newdomain in "${new_domains[@]}"; do
+                # Domain baru yang akan dieksekusi:
                 for newdtdom in "${new_domains[@]}"; do
                     ndtdom=(${newdtdom//_/ })
                     newdomain="${ndtdom[0]}"
-                    # platform="${ndtdom[1]}"
-                    # enkod="${ndtdom[2]}"
 
-                    # >"$rundir/rundom.txt"
                     if [[ ! -d "$rundir/active" ]]; then
                         mkdir -p "$rundir/active"
                     fi
 
-                    # Cek keberadaan file domain1.txt
                     if [ ! -f "$rundir/active/$newdomain.txt" ]; then
                         screen -dmS "$newdomain" sh /rs/setdom.sh "$newdtdom"
                     fi
@@ -58,7 +50,7 @@ while true; do
 
     # BEKAP SSL
     if [ -d "$rundir/active" ] && [ -z "$(ls -A "$rundir/active")" ]; then
-        echo "Proses A: Direktori $active_dir ada dan kosong."
+        # Direktori $active_dir ada dan kosong.
         ssl_dir="/etc/letsencrypt"
         backup_file="ssl_backup_$(date +%Y%m%d).tar.gz"
         tar -czvf "$sslbekup/$backup_file" "$ssl_dir"
