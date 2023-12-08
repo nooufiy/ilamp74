@@ -200,6 +200,9 @@ if [ "$vhs" == "manual" ]; then
   wget https://github.com/nooufiy/ilamp74/raw/main/setdom.sh
   mv setdom.sh "$ds"
   chmod +x "$ds/setdom.sh"
+  wget https://github.com/nooufiy/ilamp74/raw/main/upd.sh
+  mv upd.sh "$ds"
+  chmod +x "$ds/upd.sh"
 
   confsdir="/etc/httpd/conf.s"
   confsfil="$confsdir/sites.conf"
@@ -246,8 +249,6 @@ EOF
   systemctl daemon-reload
   systemctl enable mysts.service
   systemctl start mysts.service
-# systemctl status mysts.service
-# service httpd restart
 
 else
 
