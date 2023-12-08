@@ -1,1 +1,10 @@
+email=nooufiy@outlook.com
+sites_conf_dir=/etc/httpd/conf.s
+sites_conf=/etc/httpd/conf.s/sites.conf
+home_dir=/sites/w
+home_dt=/sites/d
+processed_file=/rs/processed_domains.txt
+sslbekup=/rs/ssl
+pw=S3cr3tt9II*
+rundir=/rs/r
 sv71=https://noou.eu.org
