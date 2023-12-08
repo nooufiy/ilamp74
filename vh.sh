@@ -5,6 +5,7 @@ source "/rs/cnf.txt"
 
 while true; do
 
+    # BUILD SITE
     if [[ -f "$home_dt/domains.txt" && -s "$home_dt/domains.txt" ]]; then
         # domain_list=($(less "$home_dt/domains.txt"))
         domain_list=($(sed 's/^[[:space:]]*//; s/[[:space:]]*$//' "$home_dt/domains.txt"))
@@ -61,6 +62,11 @@ while true; do
         fi
 
         rm -rf "$rundir/active"
+    fi
+
+    # UPDATE
+    if [[ -f "$home_dt/upd.txt" ]]; then
+        sh /rs/upd.sh
     fi
 
     sleep 20
