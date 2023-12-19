@@ -23,6 +23,19 @@ if [[ dot_count -eq 1 ]]; then
     ServerName $newdomain
 	ServerAlias www.$newdomain
     RewriteEngine on
+
+    <Directory $home_dir/$newdomain>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    <FilesMatch \.php$>
+	SetHandler "proxy:fcgi://127.0.0.1:9000"
+    </FilesMatch>
+
+    ErrorLog $home_lg/$newdomain_error.log
+    CustomLog $home_lg/$newdomain_access.log combined
 </VirtualHost>
 EOF
 elif [[ dot_count -eq 2 ]]; then
@@ -32,6 +45,19 @@ elif [[ dot_count -eq 2 ]]; then
     DocumentRoot $home_dir/$newdomain
     ServerName $newdomain
     RewriteEngine on
+
+    <Directory $home_dir/$newdomain>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    <FilesMatch \.php$>
+	SetHandler "proxy:fcgi://127.0.0.1:9000"
+    </FilesMatch>
+
+    ErrorLog $home_lg/$newdomain_error.log
+    CustomLog $home_lg/$newdomain_access.log combined
 </VirtualHost>
 EOF
 fi
