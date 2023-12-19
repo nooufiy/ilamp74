@@ -123,22 +123,23 @@ EOF
 # php -v
 
 install_php() {
-    sudo yum install epel-release yum-utils -y
-    sudo yum install http://rpms.remirepo.net/enterprise/remi-release-7.rpm -y
+    yum install epel-release yum-utils -y
+    yum install http://rpms.remirepo.net/enterprise/remi-release-7.rpm -y
 
     if [[ "$phpv" == "php74" ]]; then
-        sudo yum-config-manager --enable remi-php74
+        yum-config-manager --enable remi-php74
     elif [[ "$phpv" == "php81" ]]; then
-        sudo yum-config-manager --enable remi-php81
+        yum-config-manager --enable remi-php81
     else
         echo "Versi PHP tidak valid. Gunakan 7.4 atau 8.1."
         exit 1
     fi
 
-    sudo yum install php-fpm php-common php-mysqlnd php-xml php-gd php-opcache php-mbstring php-json -y
-    sudo systemctl start php-fpm
-    sudo systemctl enable php-fpm
-    sudo systemctl status php-fpm
+    yum install php-fpm php-common php-mysqlnd php-xml php-gd php-opcache php-mbstring php-json php-cli php-geos php-mcrypt php-xmlrpc -y
+
+    systemctl start php-fpm
+    systemctl enable php-fpm
+    systemctl status php-fpm
 }
 install_php
 
