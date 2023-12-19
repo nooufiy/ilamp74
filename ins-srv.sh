@@ -252,6 +252,7 @@ sites_conf_dir=$confsdir
 sites_conf=$confsfil
 home_dir=$dpub/w
 home_dt=$dpub/d
+home_lg=$dpub/l
 processed_file=$ds/processed_domains.txt
 sslbekup=$ds/ssl
 pw=$rpas
