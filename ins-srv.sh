@@ -404,6 +404,7 @@ firewall-cmd --permanent --zone=public --add-service=http
 firewall-cmd --permanent --zone=public --add-service=https
 firewall-cmd --permanent --zone=public --add-service=mysql
 firewall-cmd --permanent --zone=public --add-service=smtp
+firewall-cmd --permanent --add-port=9000/tcp
 firewall-cmd --reload
 # firewall-cmd --permanent --add-rich-rule='rule service name=ssh limit value="3/m" drop'
 
