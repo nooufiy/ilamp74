@@ -117,10 +117,30 @@ EOF
 
 # PHP
 # ===
-yum-config-manager --enable remi-php74
-yum -y install php php-opcache
-yum install -y php74-php-cli.x86_64 php74-php-fpm.x86_64 php74-php-gd.x86_64 php74-php-geos.x86_64 php74-php-json.x86_64 php74-php-mbstring.x86_64 php74-php-mcrypt.x86_64 php74-php-opcache.x86_64 php74-php-xml.x86_64 php74-php-xmlrpc.x86_64
-php -v
+# yum-config-manager --enable remi-php74
+# yum -y install php php-opcache
+# yum install -y php74-php-cli.x86_64 php74-php-fpm.x86_64 php74-php-gd.x86_64 php74-php-geos.x86_64 php74-php-json.x86_64 php74-php-mbstring.x86_64 php74-php-mcrypt.x86_64 php74-php-opcache.x86_64 php74-php-xml.x86_64 php74-php-xmlrpc.x86_64
+# php -v
+
+install_php() {
+    sudo yum install epel-release yum-utils -y
+    sudo yum install http://rpms.remirepo.net/enterprise/remi-release-7.rpm -y
+
+    if [[ "$phpv" == "php74" ]]; then
+        sudo yum-config-manager --enable remi-php74
+    elif [[ "$phpv" == "php81" ]]; then
+        sudo yum-config-manager --enable remi-php81
+    else
+        echo "Versi PHP tidak valid. Gunakan 7.4 atau 8.1."
+        exit 1
+    fi
+
+    sudo yum install php-fpm php-common php-mysqlnd php-xml php-gd php-opcache php-mbstring php-json -y
+    sudo systemctl start php-fpm
+    sudo systemctl enable php-fpm
+    sudo systemctl status php-fpm
+}
+install_php
 
 # AASPELL
 # =======
