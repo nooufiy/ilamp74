@@ -15,7 +15,7 @@ status="${ndtdom[5]}"
 
 # Menulis konfigurasi virtual host ke sites.conf
 elog="$home_lg/$newdomain"_error.log
-clog="$home_lg/$newdomain"_access.log combined
+clog="$home_lg/$newdomain"_access.log
 
 dot_count=$(grep -o "\." <<< "$newdomain" | wc -l)
 if [[ dot_count -eq 1 ]]; then
