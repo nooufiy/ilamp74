@@ -14,6 +14,9 @@ status="${ndtdom[5]}"
 > "$rundir/active/$newdomain.txt"
 
 # Menulis konfigurasi virtual host ke sites.conf
+elog="$home_lg/$newdomain"_error.log
+clog="$home_lg/$newdomain"_access.log combined
+
 dot_count=$(grep -o "\." <<< "$newdomain" | wc -l)
 if [[ dot_count -eq 1 ]]; then
 	#write_to_sites_conf "$newdomain" "domain"
@@ -23,8 +26,8 @@ if [[ dot_count -eq 1 ]]; then
     ServerName $newdomain
 	ServerAlias www.$newdomain
     RewriteEngine on
-    ErrorLog "$home_lg/$newdomain"_error.log
-    CustomLog "$home_lg/$newdomain"_access.log combined
+    ErrorLog $elog
+    CustomLog $clog
 </VirtualHost>
 EOF
 elif [[ dot_count -eq 2 ]]; then
@@ -34,8 +37,8 @@ elif [[ dot_count -eq 2 ]]; then
     DocumentRoot $home_dir/$newdomain
     ServerName $newdomain
     RewriteEngine on
-    ErrorLog "$home_lg/$newdomain"_error.log
-    CustomLog "$home_lg/$newdomain"_access.log combined
+    ErrorLog $elog
+    CustomLog $clog
 </VirtualHost>
 EOF
 fi
