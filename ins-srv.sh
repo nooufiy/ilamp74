@@ -448,17 +448,6 @@ cat <<EOF | sudo tee -a /etc/httpd/conf.s/sites.conf >/dev/null
     DocumentRoot $dpub/w
     ServerName $ip
     RewriteEngine on
-
-    <Directory $home_dir/$newdomain>
-      Options Indexes FollowSymLinks
-      AllowOverride All
-      Require all granted
-    </Directory>
-
-    <FilesMatch \.php$>
-      SetHandler "proxy:fcgi://127.0.0.1:9000"
-    </FilesMatch>
-
     ErrorLog $home_lg/"$ip"_error.log
     CustomLog $home_lg/"$ip"_access.log combined
 </VirtualHost>
