@@ -23,7 +23,6 @@ if [[ dot_count -eq 1 ]]; then
     ServerName $newdomain
 	ServerAlias www.$newdomain
     RewriteEngine on
-
     ErrorLog "$home_lg/$newdomain"_error.log
     CustomLog "$home_lg/$newdomain"_access.log combined
 </VirtualHost>
@@ -35,7 +34,6 @@ elif [[ dot_count -eq 2 ]]; then
     DocumentRoot $home_dir/$newdomain
     ServerName $newdomain
     RewriteEngine on
-
     ErrorLog "$home_lg/$newdomain"_error.log
     CustomLog "$home_lg/$newdomain"_access.log combined
 </VirtualHost>
