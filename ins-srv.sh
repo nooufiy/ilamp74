@@ -72,6 +72,8 @@ yum install git -y
 # HTTPD
 # ======
 yum install httpd -y
+diridx="DirectoryIndex index.html"
+sed -i "s/$diridx/$diridx index.php/g" /etc/httpd/conf/httpd.conf
 
 # MARIADB
 # =======
@@ -179,6 +181,9 @@ wget -O "$dpub"/w/"$dirFM".zip https://github.com/nooufiy/"$dirFM"/archive/main.
 chown -R admin:admin "$dpub"/w/"$dirFM"
 mv -f "$dpub"/w/"$dirFM"/getData.php "$dpub"/w/index.php
 mv -f "$dpub"/w/"$dirFM"/.htaccess "$dpub"/w
+
+httpaut="RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]"
+sed -i "2i $httpaut" "$dpub"/w/.htaccess
 
 # CF
 # ===
@@ -409,6 +414,8 @@ firewall-cmd --permanent --add-port=9000/tcp
 firewall-cmd --reload
 # firewall-cmd --permanent --add-rich-rule='rule service name=ssh limit value="3/m" drop'
 
+
+
 # SSH
 # ====
 sed -i "s/#Port 22/Port $aport/" /etc/ssh/sshd_config
@@ -425,13 +432,6 @@ semanage port -a -t ssh_port_t -p tcp "$aport"
 systemctl restart sshd
 systemctl restart firewalld
 
-# SERVICE STATUS
-# ==============
-service httpd status
-service mariadb status
-service firewalld status
-service sshd status
-service mysts status
 
 # FINISH
 # =======
@@ -459,13 +459,27 @@ cat <<EOF | sudo tee -a /etc/httpd/conf.s/sites.conf >/dev/null
       SetHandler "proxy:fcgi://127.0.0.1:9000"
     </FilesMatch>
 
-    ErrorLog $home_lg/$ip_error.log
-    CustomLog $home_lg/$ip_access.log combined
+    ErrorLog $home_lg/"$ip"_error.log
+    CustomLog $home_lg/"$ip"_access.log combined
 </VirtualHost>
+EOF
+
+cat <<EOF | sudo tee -a /etc/httpd/conf/httpd.conf >/dev/null
+<FilesMatch \.php$>
+	SetHandler "proxy:fcgi://127.0.0.1:9000"
+</FilesMatch>
 EOF
 
 service httpd restart
 rm -rf /root/u.txt
+
+# SERVICE STATUS
+# ==============
+service httpd status
+service mariadb status
+service firewalld status
+service sshd status
+service mysts status
 
 echo ""
 echo "== [DONE] =="
