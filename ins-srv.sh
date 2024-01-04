@@ -443,15 +443,18 @@ sed -i '/^$/d' "$ds/cnf.txt"
 sed -i "s/dbmin/$rurl/g" /etc/httpd/conf.d/phpMyAdmin.conf
 mv "$dpub/w/$dirFM" "$dpub/w/_$rurl"
 
-elog="$dpub/l/$ip"_error.log
-clog="$dpub/l/$ip"_access.log combined
+# elog="$dpub/l/$ip"_error.log
+# clog="$dpub/l/$ip"_"access.log combined"
+elog="$dpub/l/${ip}_error.log"
+clog="$dpub/l/${ip}_access.log"
+
 cat <<EOF | sudo tee -a /etc/httpd/conf.s/sites.conf >/dev/null
 <VirtualHost *:80>
     DocumentRoot $dpub/w
     ServerName $ip
     RewriteEngine on
     ErrorLog $elog
-    CustomLog $clog
+    CustomLog $clog combined
 </VirtualHost>
 EOF
 
