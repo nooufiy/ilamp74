@@ -464,7 +464,11 @@ cat <<EOF | sudo tee -a /etc/httpd/conf/httpd.conf >/dev/null
 </FilesMatch>
 EOF
 
+# SERVICE RESTART
+# ==============
 service httpd restart
+service php-fpm restart
+
 rm -rf /root/u.txt
 
 # SERVICE STATUS
