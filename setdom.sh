@@ -14,8 +14,10 @@ status="${ndtdom[5]}"
 > "$rundir/active/$newdomain.txt"
 
 # Menulis konfigurasi virtual host ke sites.conf
-elog="$home_lg/$newdomain"_error.log
-clog="$home_lg/$newdomain"_"access.log combined"
+#ErrorLog "|/usr/sbin/rotatelogs /sites/l/%Y-%m-%d/elara.com_error.log 86400"
+#CustomLog "|/usr/sbin/rotatelogs /sites/l/%Y-%m-%d/elara.com_access.log 86400" combined
+elog="|/usr/sbin/rotatelogs $home_lg/%Y-%m-%d/$newdomain"_"error.log 86400"
+clog="|/usr/sbin/rotatelogs $home_lg/%Y-%m-%d/$newdomain"_"access.log 86400 combined"
 
 dot_count=$(grep -o "\." <<< "$newdomain" | wc -l)
 if [[ dot_count -eq 1 ]]; then
