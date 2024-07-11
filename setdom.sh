@@ -14,6 +14,8 @@ status="${ndtdom[5]}"
 > "$rundir/active/$newdomain.txt"
 
 # Menulis konfigurasi virtual host ke sites.conf
+#elog="$home_lg/$newdomain"_error.log
+#clog="$home_lg/$newdomain"_"access.log combined"
 #ErrorLog "|/usr/sbin/rotatelogs /sites/l/%Y-%m-%d/elara.com_error.log 86400"
 #CustomLog "|/usr/sbin/rotatelogs /sites/l/%Y-%m-%d/elara.com_access.log 86400" combined
 elog="$home_lg/$newdomain"_"error.log"
