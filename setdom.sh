@@ -131,20 +131,69 @@ chown -R apache:apache "$home_dir/$newdomain"
 chcon -R system_u:object_r:httpd_sys_content_t "$home_dir/$newdomain"
 chcon -R -u system_u -r object_r -t httpd_sys_rw_content_t "$home_dir/$newdomain"
 
-if certbot certificates | grep -q "Expiry Date"; then
-	echo "Sertifikat ada."
-else
-	echo "Sertifikat tidak ada atau sudah expired."
+# SSL
 
-	# Hitung jumlah titik dalam string
-	num_dots=$(echo "$newdomain" | tr -cd '.' | wc -c)
-	# Cek apakah jumlah titik adalah satu
-	if [ "$num_dots" -eq 1 ]; then
-		certbot --apache -d "$newdomain" -d "www.$newdomain" --email "$email" --agree-tos -n
-	else
-		certbot --apache -d "$newdomain" --email "$email" --agree-tos -n
-	fi
-fi
+# if certbot certificates | grep -q "Expiry Date"; then
+# 	echo "Sertifikat ada."
+# else
+# 	echo "Sertifikat tidak ada atau sudah expired."
+
+# 	# Hitung jumlah titik dalam string
+# 	num_dots=$(echo "$newdomain" | tr -cd '.' | wc -c)
+# 	# Cek apakah jumlah titik adalah satu
+# 	if [ "$num_dots" -eq 1 ]; then
+# 		certbot --apache -d "$newdomain" -d "www.$newdomain" --email "$email" --agree-tos -n
+# 	else
+# 		certbot --apache -d "$newdomain" --email "$email" --agree-tos -n
+# 	fi
+# fi
+
+# curl -s https://publicsuffix.org/list/public_suffix_list.dat -o /rs/public_suffix_list.dat
+[ ! -f /rs/public_suffix_list.dat ] && curl -s https://publicsuffix.org/list/public_suffix_list.dat -o /rs/public_suffix_list.dat
+
+check_certificate() {
+    local domain="$1"
+    certbot certificates | grep -qE "Domains:.*\b$domain\b" && {
+        certbot certificates | grep -A 1 -E "Domains:.*\b$domain\b" | grep -q "VALID" && return 0
+        return 1
+    }
+    return 2
+}
+
+is_root_domain() {
+    local domain="$1"
+    local tld=$(grep -E '^[^//]' /rs/public_suffix_list.dat | grep -F ".$(echo "$domain" | rev | cut -d. -f1-2 | rev)" || true)
+    
+    if [ -z "$tld" ]; then
+        local num_parts=$(echo "$domain" | awk -F'.' '{print NF}')
+        [[ "$num_parts" -eq 2 ]]
+        return $?
+    else
+        local num_parts=$(echo "$domain" | awk -F".$tld" '{print NF-1}')
+        [[ "$num_parts" -eq 1 ]]
+        return $?
+    fi
+}
+
+manage_ssl() {
+    local action="$1"
+    local domain="$2"
+    local email="$3"
+    if is_root_domain "$domain"; then
+        [ "$action" == "add" ] && certbot --apache -d "$domain" -d "www.$domain" --email "$email" --agree-tos -n
+        [ "$action" == "renew" ] && certbot renew --cert-name "$domain"
+    else
+        [ "$action" == "add" ] && certbot --apache -d "$domain" --email "$email" --agree-tos -n
+        [ "$action" == "renew" ] && certbot renew --cert-name "$domain"
+    fi
+}
+
+check_certificate "$newdomain"
+status=$?
+
+[ "$status" -eq 0 ] && manage_ssl "renew" "$newdomain" "$email"
+[ "$status" -eq 1 ] && manage_ssl "add" "$newdomain" "$email"
+[ "$status" -eq 2 ] && manage_ssl "add" "$newdomain" "$email"
 
 # echo "$newdomain,$dbuser,$dbname,$dbpass" >> "$processed_file"
 cleaned_newdomain=$(echo "$newdomain" | tr -d '\r')
