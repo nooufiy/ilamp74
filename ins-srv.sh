@@ -462,6 +462,8 @@ EOF
 cat <<EOF | sudo tee -a /etc/httpd/conf/httpd.conf >/dev/null
 ServerTokens Prod
 ServerSignature Off
+Header set X-Frame-Options "SAMEORIGIN"
+Header set X-Content-Type-Options "nosniff"
 EOF
 
 cat <<EOF | sudo tee -a /etc/httpd/conf/httpd.conf >/dev/null
