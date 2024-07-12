@@ -460,6 +460,11 @@ cat <<EOF | sudo tee -a /etc/httpd/conf.s/sites.conf >/dev/null
 EOF
 
 cat <<EOF | sudo tee -a /etc/httpd/conf/httpd.conf >/dev/null
+ServerTokens Prod
+ServerSignature Off
+EOF
+
+cat <<EOF | sudo tee -a /etc/httpd/conf/httpd.conf >/dev/null
 <FilesMatch \.php$>
 	SetHandler "proxy:fcgi://127.0.0.1:9000"
 </FilesMatch>
