@@ -37,6 +37,7 @@ generate_vhost() {
 EOL
 }
 
+generate_vhost "$home_dir" "$newdomain" "$elog" "$clog"
 
 mkdir "$home_dir/$newdomain"
 
