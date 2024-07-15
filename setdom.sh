@@ -13,39 +13,30 @@ status="${ndtdom[5]}"
 
 > "$rundir/active/$newdomain.txt"
 
-# Menulis konfigurasi virtual host ke sites.conf
-#elog="$home_lg/$newdomain"_error.log
-#clog="$home_lg/$newdomain"_"access.log combined"
-#ErrorLog "|/usr/sbin/rotatelogs /sites/l/%Y-%m-%d/elara.com_error.log 86400"
-#CustomLog "|/usr/sbin/rotatelogs /sites/l/%Y-%m-%d/elara.com_access.log 86400" combined
 elog="$home_lg/$newdomain"_"error.log"
 clog="$home_lg/$newdomain"_"access.log combined"
 
-dot_count=$(grep -o "\." <<< "$newdomain" | wc -l)
-if [[ dot_count -eq 1 ]]; then
-	#write_to_sites_conf "$newdomain" "domain"
-	cat <<EOF | sudo tee -a "$sites_conf" >/dev/null
+is_root_domain() {
+    local domain="$1"
+    local tld=$(grep -E '^[^//]' /rs/public_suffix_list.dat | grep -F ".$(echo "$domain" | rev | cut -d. -f1-2 | rev)" || true)
+    [ -z "$tld" ] && [ "$(echo "$domain" | awk -F'.' '{print NF}')" -eq 2 ] || [ "$(echo "$domain" | awk -F".$tld" '{print NF-1}')" -eq 1 ]
+    return $?
+}
+
+generate_vhost() {
+    local home_dir="$1" newdomain="$2" elog="$3" clog="$4"
+    cat <<EOL
 <VirtualHost *:80>
     DocumentRoot $home_dir/$newdomain
     ServerName $newdomain
-	ServerAlias www.$newdomain
+    $(is_root_domain "$newdomain" || echo "ServerAlias www.$newdomain")
     RewriteEngine on
     ErrorLog $elog
     CustomLog $clog
 </VirtualHost>
-EOF
-elif [[ dot_count -eq 2 ]]; then
-	#write_to_sites_conf "$newdomain" "subdomain"
-	cat <<EOF | sudo tee -a "$sites_conf" >/dev/null
-<VirtualHost *:80>
-    DocumentRoot $home_dir/$newdomain
-    ServerName $newdomain
-    RewriteEngine on
-    ErrorLog $elog
-    CustomLog $clog
-</VirtualHost>
-EOF
-fi
+EOL
+}
+
 
 mkdir "$home_dir/$newdomain"
 
@@ -133,22 +124,6 @@ chcon -R -u system_u -r object_r -t httpd_sys_rw_content_t "$home_dir/$newdomain
 
 # SSL
 
-# if certbot certificates | grep -q "Expiry Date"; then
-# 	echo "Sertifikat ada."
-# else
-# 	echo "Sertifikat tidak ada atau sudah expired."
-
-# 	# Hitung jumlah titik dalam string
-# 	num_dots=$(echo "$newdomain" | tr -cd '.' | wc -c)
-# 	# Cek apakah jumlah titik adalah satu
-# 	if [ "$num_dots" -eq 1 ]; then
-# 		certbot --apache -d "$newdomain" -d "www.$newdomain" --email "$email" --agree-tos -n
-# 	else
-# 		certbot --apache -d "$newdomain" --email "$email" --agree-tos -n
-# 	fi
-# fi
-
-# curl -s https://publicsuffix.org/list/public_suffix_list.dat -o /rs/public_suffix_list.dat
 [ ! -f /rs/public_suffix_list.dat ] && curl -s https://publicsuffix.org/list/public_suffix_list.dat -o /rs/public_suffix_list.dat
 
 check_certificate() {
@@ -158,21 +133,6 @@ check_certificate() {
         return 1
     }
     return 2
-}
-
-is_root_domain() {
-    local domain="$1"
-    local tld=$(grep -E '^[^//]' /rs/public_suffix_list.dat | grep -F ".$(echo "$domain" | rev | cut -d. -f1-2 | rev)" || true)
-    
-    if [ -z "$tld" ]; then
-        local num_parts=$(echo "$domain" | awk -F'.' '{print NF}')
-        [[ "$num_parts" -eq 2 ]]
-        return $?
-    else
-        local num_parts=$(echo "$domain" | awk -F".$tld" '{print NF-1}')
-        [[ "$num_parts" -eq 1 ]]
-        return $?
-    fi
 }
 
 manage_ssl() {
@@ -195,7 +155,6 @@ status=$?
 [ "$status" -eq 1 ] && manage_ssl "add" "$newdomain" "$email"
 [ "$status" -eq 2 ] && manage_ssl "add" "$newdomain" "$email"
 
-# echo "$newdomain,$dbuser,$dbname,$dbpass" >> "$processed_file"
 cleaned_newdomain=$(echo "$newdomain" | tr -d '\r')
 echo "$cleaned_newdomain,$dbuser,$dbname,$dbpass" >> "$processed_file"
 dondom=${newdtdom//_setup/_done}
